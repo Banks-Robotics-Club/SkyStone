@@ -306,10 +306,10 @@
      }
 
      public boolean areWeThereYet() {
-            int temp1 = abs(flmTarget - flm.getCurrentPosition() );
-            int temp2 = abs(frmTarget - frm.getCurrentPosition() );
-            int temp3 = abs(blmTarget - blm.getCurrentPosition() );
-            int temp4 = abs(brmTarget - brm.getCurrentPosition() );
+            int temp1 = abs(flmTarget - flm.getCurrentPosition());
+            int temp2 = abs(frmTarget - frm.getCurrentPosition());
+            int temp3 = abs(blmTarget - blm.getCurrentPosition());
+            int temp4 = abs(brmTarget - brm.getCurrentPosition());
          if (temp1 == 0 || temp2 == 0 || temp3 == 0 || temp4 == 0 ) {
             return true;
           }
