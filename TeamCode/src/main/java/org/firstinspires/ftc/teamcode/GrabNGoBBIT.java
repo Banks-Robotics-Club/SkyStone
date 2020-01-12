@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "GrabNGo", group = "")
-public class GrabNGo extends CommonOpMode {
+@Autonomous(name = "GrabNGoBBIT", group = "")
+public class GrabNGoBBIT extends CommonOpMode {
     static final int SERVO_WAIT_TIME = 1000;
 
     @Override
@@ -29,20 +29,11 @@ public class GrabNGo extends CommonOpMode {
 
 
                     //DriveY(-169, 1);
-                    driveAuto(1, 0, 0, 1, 169);
+                    driveAuto(-1, 0, 0, 1, -169);
                     //distanceDrive(160);
                     Grabber.setPosition(1);
                     sleep(SERVO_WAIT_TIME);
 
-
-                    //DriveX(160, 1);
-                    driveAuto(0, 1, 0, 1, 160);
-                    //DriveY(105, 1);
-                    driveAuto(1, 0, 0, 1, 95);
-                    //DriveX(-57, 1);
-                    driveAuto(0, -1, 0, 1, -35);
-                    //DriveX(140, 1);
-                    driveAuto(0, 1, 0, 1, 140);
                     break;
                 }
                 if (position == RIGHT) {
@@ -56,25 +47,12 @@ public class GrabNGo extends CommonOpMode {
                     //idle();
 
                     //DriveY(-169, 1);
-                    driveAuto(1, 0, 0, 1, 169);
+                    driveAuto(-1, 0, 0, 1, -169);
                     //distanceDrive(160);
                     Grabber.setPosition(1);
                     sleep(SERVO_WAIT_TIME);
                     //idle();
 
-                    //DriveX(160, 1);
-                    driveAuto(0, 1, 0, 1, 160);
-                    //DriveY(105, 1);
-                    driveAuto(-1, 0, 0, 1, -95);
-
-                    //DriveX(-57, 1);
-                    driveAuto(0, -1, 0, 1, -35);
-
-                    //DriveY(-160, 1);
-                    driveAuto(1, 0, 0, 1, 115);
-                    //distanceDrive(145);
-                    //DriveX(140, 1);
-                    driveAuto(0, 1, 0, 1, 140);
                     break;
                 }
 
@@ -91,23 +69,12 @@ public class GrabNGo extends CommonOpMode {
                     //idle();
 
                     //DriveY(-170, 1);
-                    driveAuto(1, 0, 0, 1, 169);
+                    driveAuto(-1, 0, 0, 1, -169);
                     //distanceDrive(160);
                     Grabber.setPosition(1);
                     sleep(CYCLE_MS);
                     //idle();
 
-                    // DriveX(-220, 1);
-                    driveAuto(0, -1, 0, 1, -160);
-
-                    //DriveY(120, 1);
-                    driveAuto(-1, 0, 0, 1, -95);
-
-                    //DriveX(40, 1);
-                    driveAuto(0, 1, 0, 1, 35);
-
-                    //DriveX(-140, 1);
-                    driveAuto(0, -1, 0, 1, -140);
                     break;
                 }
                 if (position == RIGHT) {
@@ -126,21 +93,6 @@ public class GrabNGo extends CommonOpMode {
                     sleep(SERVO_WAIT_TIME);
                     //idle();
 
-                    //DriveX(-180, 1);
-                    driveAuto(0, -1, 0, 1, -160);
-
-                    // DriveY(110, 1);
-                    driveAuto(-1, 0, 0, 1, -95);
-
-                    //DriveX(70, 1);
-                    driveAuto(0, 1, 0, 1, 35);
-
-                    //DriveY(-120, 1);
-                    driveAuto(1, 0, 0, 1, 115);
-                    //distanceDrive(145);
-
-                    //DriveX(-140, 1);
-                    driveAuto(0, -1, 0, 1, -140);
                     break;
                 }
             }

@@ -10,16 +10,15 @@
  import com.qualcomm.robotcore.hardware.DistanceSensor;
  import com.qualcomm.robotcore.hardware.Servo;
  import com.qualcomm.robotcore.util.ElapsedTime;
+
+ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
  import static java.lang.Math.abs;
 
  public abstract class CommonOpMode extends LinearOpMode {
 
      private ElapsedTime     runtime = new ElapsedTime();
      int blockHeight = 890;
-     int flmTarget = 0;
-     int blmTarget = 0;
-     int frmTarget = 0;
-     int brmTarget = 0;
      double speedAdjust = 10;
      boolean speedUp = false;
      boolean slowDown = false;
@@ -47,13 +46,14 @@
    public CRServo RI;
    public Servo Grabber;
    public Servo CapGrab;
+   private DistanceSensor sensorRange;
    double frPower = 0;
    double flPower = 0;
    double blPower = 0;
    double brPower = 0;
    double clockwiseRotation = 0;
    double counterclockwiseRotation = 0;
-   static final int    CYCLE_MS    =   1000;
+   static final int    CYCLE_MS    =   500;
 
    public ColorSensor colorSensorREV;
    //public TouchSensor magneticSensor;
@@ -77,7 +77,9 @@
              telemetry.addData("right", "");
              position = RIGHT;
          }
-         telemetry.update();
+
+        telemetry.addData("Initialized Correctly!", "");
+        telemetry.update();
 
      }
 
@@ -93,6 +95,7 @@
      lift = hardwareMap.dcMotor.get("lift");
      LI = hardwareMap.crservo.get("LI");
      RI = hardwareMap.crservo.get("RI");
+     sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
      colorSensorREV = hardwareMap.colorSensor.get("colorSensor");
      //magneticSensor = hardwareMap.touchSensor.get("magneticSensor");
      leftTouchSensor = hardwareMap.get(DigitalChannel.class, "LT");
@@ -232,90 +235,22 @@
      }
 
 
-     public void driveAutoOld(double straight, double strafe, double turn, double speed, int distance) {
+     public void driveAuto(double straight, double strafe, double turn, double speed, int distance_cm) {
+         double distance_encoder = (int)((distance_cm * 1120) / 31.4);
+
          resetDrive();
 
-          distance = (int)((distance * 1120) / 31.4);
-          if (straight != 0){
-            telemetry.addData("straight", straight);
-            flm.setTargetPosition(distance);
-            blm.setTargetPosition(distance);
-            frm.setTargetPosition(distance);
-            brm.setTargetPosition(distance);
-          }
-          else if (strafe != 0){
-            telemetry.addData("strafe", strafe);
-            flm.setTargetPosition(+distance);
-            blm.setTargetPosition(-distance);
-            frm.setTargetPosition(-distance);
-            brm.setTargetPosition(+distance);
-          }
-          else if (turn !=0 ){
-            telemetry.addData("turn", turn);
-            flm.setTargetPosition(+distance);
-            blm.setTargetPosition(+distance);
-            frm.setTargetPosition(-distance);
-            brm.setTargetPosition(-distance);
-          }
-           blm.setPower((straight + strafe - turn) * (-speed));
-           flm.setPower((straight - strafe - turn) * (-speed));
-           brm.setPower((straight - strafe + turn) * (-speed));
-           frm.setPower((straight + strafe + turn) * (-speed));
-           runToPosition();
-           waitForMotorsAndRelayTelm();
-           //resetDrive();
-           stopDriveMotors();
-     }
-     public void driveAuto(double straight, double strafe, double turn, double speed, int distance) {
-         resetDriveWithoutEncoder();
-
-         distance = (int)((distance * 1120) / 31.4);
-         if (straight != 0){
-             telemetry.addData("straight", straight);
-             flmTarget = distance;
-             frmTarget = distance;
-             blmTarget = distance;
-             brmTarget = distance;
-         }
-         else if (strafe != 0){
-             telemetry.addData("strafe", strafe);
-             flmTarget = + distance;
-             blmTarget = - distance;
-             frmTarget = - distance;
-             brmTarget = + distance;
-         }
-         else if (turn !=0 ){
-             telemetry.addData("turn", turn);
-             flmTarget = + distance;
-             blmTarget = + distance;
-             frmTarget = - distance;
-             brmTarget = - distance;
-         }
          blm.setPower((straight + strafe - turn) * (-speed));
          flm.setPower((straight - strafe - turn) * (-speed));
          brm.setPower((straight - strafe + turn) * (-speed));
          frm.setPower((straight + strafe + turn) * (-speed));
-         //runToPosition();
-        // waitForMotorsAndRelayTelm();
-         while(opModeIsActive() && !areWeThereYet()){
-            idle();
-         }
-         //resetDrive();
+         lessThanEqualTelemetry(distance_encoder);
          stopDriveMotors();
-
      }
 
-     public boolean areWeThereYet() {
-            int temp1 = abs(flmTarget - flm.getCurrentPosition());
-            int temp2 = abs(frmTarget - frm.getCurrentPosition());
-            int temp3 = abs(blmTarget - blm.getCurrentPosition());
-            int temp4 = abs(brmTarget - brm.getCurrentPosition());
-         if (temp1 == 0 || temp2 == 0 || temp3 == 0 || temp4 == 0 ) {
-            return true;
-          }
-
-         else{
-             return false;
+     public void lessThanEqualTelemetry (double target){
+         while (opModeIsActive() && distanceDone(target)) {
+                idle();
          }
 
      }
@@ -585,6 +520,32 @@
          } else {
              CapGrab.setPosition(0.95);
          }
+     }
+
+     public boolean distanceDone(double target){
+         if ((abs(flm.getCurrentPosition()) <= abs(target)) && (abs(blm.getCurrentPosition()) <= abs(target))
+                                                            && (abs(frm.getCurrentPosition()) <= abs(target))
+                                                            && (abs(brm.getCurrentPosition()) <= abs(target))) {
+              return true;
+         } else {
+              return false;
+         }
+
+     }
+
+     public void  distanceDrive(double distance_cm) {
+         double target = (int)((distance_cm * 1120) / 31.4);
+         resetDrive();
+         while (opModeIsActive() && (/*sensorRange.getDistance(DistanceUnit.CM) > 4 ||*/ distanceDone(target))) {
+             telemetry.addData("range", String.format("%.01f cm", sensorRange.getDistance(DistanceUnit.CM)));
+             telemetry.addData("distance met", "%s", distanceDone(target));
+             telemetry.update();
+             flm.setPower(-1);
+             blm.setPower(-1);
+             brm.setPower(-1);
+             frm.setPower(-1);
+         }
+         stopDriveMotors();
      }
 
      /*public void touch() {
