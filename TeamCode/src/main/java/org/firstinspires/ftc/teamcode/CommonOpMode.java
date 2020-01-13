@@ -56,7 +56,6 @@
    static final int    CYCLE_MS    =   500;
 
    public ColorSensor colorSensorREV;
-   //public TouchSensor magneticSensor;
    public DigitalChannel leftTouchSensor;
    public DigitalChannel rightTouchSensor;
    public DistanceSensor distanceSensor;
@@ -97,7 +96,6 @@
      RI = hardwareMap.crservo.get("RI");
      sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
      colorSensorREV = hardwareMap.colorSensor.get("colorSensor");
-     //magneticSensor = hardwareMap.touchSensor.get("magneticSensor");
      leftTouchSensor = hardwareMap.get(DigitalChannel.class, "LT");
      rightTouchSensor = hardwareMap.get(DigitalChannel.class, "RT");
      distanceSensor = hardwareMap.get(DistanceSensor.class, "sensor_range");
