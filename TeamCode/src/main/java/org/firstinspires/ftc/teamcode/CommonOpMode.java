@@ -18,13 +18,15 @@
  public abstract class CommonOpMode extends LinearOpMode {
 
      private ElapsedTime     runtime = new ElapsedTime();
-     int blockHeight = 890;
+     int blockHeight = 925;
      double speedAdjust = 10;
      boolean speedUp = false;
      boolean slowDown = false;
      int increment = 1;
      boolean incrementUp = false;
      boolean incrementDown = false;
+     boolean grabberbuttonpushed = false;
+     boolean grabberbuttonnotPushed = false;
 
      static boolean RED = true;
      static boolean BLUE = false;
@@ -37,28 +39,28 @@
 
      DcMotor flm;
      DcMotor blm;
-   DcMotor frm;
-   DcMotor brm;
-   public DcMotor leftarm;
-   public DcMotor rightarm;
-   public DcMotor lift;
-   public CRServo LI;
-   public CRServo RI;
-   public Servo Grabber;
-   public Servo CapGrab;
-   private DistanceSensor sensorRange;
-   double frPower = 0;
-   double flPower = 0;
-   double blPower = 0;
-   double brPower = 0;
-   double clockwiseRotation = 0;
-   double counterclockwiseRotation = 0;
-   static final int    CYCLE_MS    =   500;
+     DcMotor frm;
+     DcMotor brm;
+     public DcMotor leftarm;
+     public DcMotor rightarm;
+     public DcMotor lift;
+     public CRServo LI;
+     public CRServo RI;
+     public Servo Grabber;
+     public Servo CapGrab;
+     private DistanceSensor sensorRange;
+     double frPower = 0;
+     double flPower = 0;
+     double blPower = 0;
+     double brPower = 0;
+     double clockwiseRotation = 0;
+     double counterclockwiseRotation = 0;
+     static final int    CYCLE_MS    =   500;
 
-   public ColorSensor colorSensorREV;
-   public DigitalChannel leftTouchSensor;
-   public DigitalChannel rightTouchSensor;
-   public DistanceSensor distanceSensor;
+     public ColorSensor colorSensorREV;
+     public DigitalChannel leftTouchSensor;
+     public DigitalChannel rightTouchSensor;
+     public DistanceSensor distanceSensor;
 
      public void allianceChooser() {
           if (gamepad1.b) {
@@ -151,17 +153,16 @@
      public void setSpeed() {
          slowDown();
          speedUp();
-         telemetry.addData("speed adjust",  "%.2f", speedAdjust);
          // return speedAdjust;
      }
 
      private void slowDown() {
          if (gamepad1.dpad_left) {
              if (!slowDown) {
-                 speedAdjust -= 1;
+                 speedAdjust -= 5;
                  slowDown = true;
-                 if (speedAdjust < 0) {
-                     speedAdjust = 0;
+                 if (speedAdjust < 5) {
+                     speedAdjust = 5;
                  }
              }
          } else {
@@ -172,7 +173,7 @@
      private void speedUp() {
          if (gamepad1.dpad_right) {
              if (!speedUp) {
-                 speedAdjust += 1;
+                 speedAdjust += 5;
                  speedUp = true;
                  if (speedAdjust > 10) {
                      speedAdjust = 10;
@@ -185,6 +186,7 @@
 
      public void getArmTelemetry() {
          telemetry.addData("IncrementLevel", increment);
+         telemetry.addData("speed adjust",  "%.2f", speedAdjust);
          telemetry.update();
      }
 
@@ -230,6 +232,24 @@
          flm.setPower((yAxis - xAxis - turn) * (-speedAdjust/10));
          brm.setPower((yAxis - xAxis + turn) * (-speedAdjust/10));
          frm.setPower((yAxis + xAxis + turn) * (-speedAdjust/10));
+     }
+
+     public void grabberControl(){
+         if (gamepad1.left_trigger == 1 && grabberbuttonpushed == false){
+             Grabber.setPosition(0);
+             grabberbuttonpushed = true;
+         } else {
+             grabberbuttonpushed = false;
+         }
+
+         if (gamepad1.right_trigger == 1 && grabberbuttonnotPushed == false){
+             Grabber.setPosition(1);
+             grabberbuttonnotPushed = true;
+         }else {
+             grabberbuttonnotPushed = false;
+         }
+
+
      }
 
 
@@ -353,11 +373,20 @@
        resetDrive();
      }
 
-      public void armReset() {
+      public void armsResetAndRun() {
          leftarm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
          rightarm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
          leftarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
          rightarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+     }
+
+     public void armsReset() {
+         boolean armszero = leftarm.getCurrentPosition() == 0 && rightarm.getCurrentPosition() == 0;
+
+         if (armszero) {
+             leftarm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+             rightarm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+         }
      }
 
      public void armsRunToPosition() {
@@ -394,8 +423,8 @@
          boolean armlowlimit = leftarm.getCurrentPosition() >= 0 && rightarm.getCurrentPosition() >= 0;
 
          if (gamepad2.a && armtoplimit)  {
-             leftarm.setTargetPosition((blockHeight*(increment-1)+800));
-             rightarm.setTargetPosition((blockHeight*(increment-1)+800));
+             leftarm.setTargetPosition((blockHeight*(increment-1)+775));
+             rightarm.setTargetPosition((blockHeight*(increment-1)+775));
              armsPower(1);
              armsRunToPosition();
          } else if (gamepad2.b && armlowlimit) {
@@ -403,6 +432,7 @@
              rightarm.setTargetPosition(0);
              armsPower(-1);
              armsRunToPosition();
+             armsReset();
          } else {
              // armsPower(0);
          }
@@ -414,12 +444,10 @@
              LI.setPower(1);
              RI.setPower(1);
              //driveAuto(1,0,0,1,30);
-         }
-         if (gamepad2.right_trigger == 1) {
+         } else if (gamepad2.right_trigger == 1) {
              LI.setPower(-1);
              RI.setPower(-1);
-         }
-         {
+         } else {
              LI.setPower(0);
              RI.setPower(0);
          }
@@ -428,7 +456,7 @@
      public void suctionBackwards(){
          LI.setPower(0.75);
          RI.setPower(0.75);
-         driveAuto(1,0,0,1,20);
+         driveAuto(-1,0,0,1,-20);
          runWithoutEncoders();
      }
 
@@ -503,11 +531,11 @@
      }
 
      public void strafeLeftAuto(){
-         driveAuto(0,1,0,1,11);
+         driveAuto(0,1,0,.5,7);
      }
 
      public void strafeRightAuto(){
-         driveAuto(0,-1,0,1,-11);
+         driveAuto(0,-1,0,.5,-8);
      }
 
      public void capstoneGrabber() {
@@ -531,7 +559,7 @@
 
      }
 
-     public void  distanceDrive(double distance_cm) {
+     public void distanceDrive(double distance_cm) {
          double target = (int)((distance_cm * 1120) / 31.4);
          resetDrive();
          while (opModeIsActive() && (/*sensorRange.getDistance(DistanceUnit.CM) > 4 ||*/ distanceDone(target))) {

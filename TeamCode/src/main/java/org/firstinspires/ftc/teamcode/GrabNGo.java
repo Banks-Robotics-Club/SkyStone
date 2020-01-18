@@ -38,7 +38,7 @@ public class GrabNGo extends CommonOpMode {
                     //DriveX(160, 1);
                     driveAuto(0, 1, 0, 1, 160);
                     //DriveY(105, 1);
-                    driveAuto(1, 0, 0, 1, 95);
+                    driveAuto(-1, 0, 0, 1, -95);
                     //DriveX(-57, 1);
                     driveAuto(0, -1, 0, 1, -35);
                     //DriveX(140, 1);
@@ -80,7 +80,7 @@ public class GrabNGo extends CommonOpMode {
 
             }
             if (alliance == RED) {
-                if (position == LEFT) {
+                if (position == RIGHT) {
                     // DriveX(160, 1);
                     driveAuto(0, 1, 0, 1, 160);
 
@@ -101,7 +101,7 @@ public class GrabNGo extends CommonOpMode {
                     driveAuto(0, -1, 0, 1, -160);
 
                     //DriveY(120, 1);
-                    driveAuto(-1, 0, 0, 1, -95);
+                    driveAuto(-1, 0, 0, 1, -115);
 
                     //DriveX(40, 1);
                     driveAuto(0, 1, 0, 1, 35);
@@ -110,7 +110,7 @@ public class GrabNGo extends CommonOpMode {
                     driveAuto(0, -1, 0, 1, -140);
                     break;
                 }
-                if (position == RIGHT) {
+                if (position == LEFT) {
                     //DriveX(160, 1);
                     driveAuto(0, 1, 0, 1, 160);
 

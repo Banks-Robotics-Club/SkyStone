@@ -9,7 +9,7 @@ public class TeleOpMA extends CommonOpMode {
     public void runOpMode() {
 
         initHardware();
-        armReset();
+        armsResetAndRun();
 
         waitForStart();
 
@@ -18,10 +18,11 @@ public class TeleOpMA extends CommonOpMode {
             incrementArms();
             suction();
             lift();
+            setSpeed();
             capstoneGrabber();
+            grabberControl();    
             lineUpBlock();
-            // strafeAuto();
-            Grabber.setPosition(1);
+           // Grabber.setPosition(1);
             incrementDown();
             incrementUp();
             getArmTelemetry();

@@ -34,6 +34,8 @@ public class GrabNGoBBIT extends CommonOpMode {
                     Grabber.setPosition(1);
                     sleep(SERVO_WAIT_TIME);
 
+                    driveAuto(0,1,0,1,240);
+
                     break;
                 }
                 if (position == RIGHT) {
@@ -52,6 +54,8 @@ public class GrabNGoBBIT extends CommonOpMode {
                     Grabber.setPosition(1);
                     sleep(SERVO_WAIT_TIME);
                     //idle();
+
+                    driveAuto(0,1,0,1,240);
 
                     break;
                 }
