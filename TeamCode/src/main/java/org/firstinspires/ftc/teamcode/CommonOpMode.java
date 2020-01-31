@@ -3,7 +3,6 @@
 
  import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
  import com.qualcomm.robotcore.hardware.CRServo;
- import com.qualcomm.robotcore.hardware.ColorSensor;
  import com.qualcomm.robotcore.hardware.DcMotor;
  import com.qualcomm.robotcore.hardware.DcMotorSimple;
  import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -57,13 +56,12 @@
      double counterclockwiseRotation = 0;
      static final int    CYCLE_MS    =   500;
 
-     public ColorSensor colorSensorREV;
      public DigitalChannel leftTouchSensor;
      public DigitalChannel rightTouchSensor;
      public DistanceSensor distanceSensor;
 
      public void allianceChooser() {
-          if (gamepad1.b) {
+         if (gamepad1.b) {
              telemetry.addData("red", "alliance");
              alliance = RED;
          } else {
@@ -97,7 +95,6 @@
      LI = hardwareMap.crservo.get("LI");
      RI = hardwareMap.crservo.get("RI");
      sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
-     colorSensorREV = hardwareMap.colorSensor.get("colorSensor");
      leftTouchSensor = hardwareMap.get(DigitalChannel.class, "LT");
      rightTouchSensor = hardwareMap.get(DigitalChannel.class, "RT");
      distanceSensor = hardwareMap.get(DistanceSensor.class, "sensor_range");
@@ -283,6 +280,7 @@
          frm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
          brm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
      }
+
      public void resetDriveWithoutEncoder(){
          flm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
          blm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -308,7 +306,7 @@
       brm.setPower(0);
      }
 
-      public void setDrivePower(double DrivePower) {
+     public void setDrivePower(double DrivePower) {
        flm.setPower(DrivePower);
        blm.setPower(DrivePower);
        frm.setPower(DrivePower);
