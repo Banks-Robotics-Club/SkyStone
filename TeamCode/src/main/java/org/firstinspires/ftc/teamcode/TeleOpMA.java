@@ -15,17 +15,19 @@ public class TeleOpMA extends CommonOpMode {
 
         while (opModeIsActive()) {
             drive();
-            incrementArms();
             suction();
-            lift();
+            //lift();
             setSpeed();
-            capstoneGrabber();
-            grabberControl();    
+            arms();
+            //capstoneGrabber();
+            //grabberControl();
             lineUpBlock();
-           // Grabber.setPosition(1);
             incrementDown();
-            incrementUp();
-            getArmTelemetry();
+            // incrementUp();
+            getGeneralTelemetry();
+            //pushOutBackwards();
+            leftactuator.setPosition(0.65);
+            rightactuator.setPosition(-0.65);
         }
     }
 }

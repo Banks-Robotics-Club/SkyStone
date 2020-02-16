@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
+@Disabled
 @Autonomous(name = "GrabNGo", group = "")
 public class GrabNGo extends CommonOpMode {
-    static final int SERVO_WAIT_TIME = 1000;
+    static final int SERVO_WAIT_TIME = 300;
 
     @Override
     public void runOpMode() {
@@ -19,128 +21,94 @@ public class GrabNGo extends CommonOpMode {
             // distance (in cm) to ticks = ((d/31.4)=r*1120)
             if (alliance == BLUE) {
                 if (position == LEFT) {
-                    //DriveX(-160, 1);
-                    driveAuto(0, -1, 0, 1, -160);
+                    driveAuto(0,1,0,1,60);
 
-                    //DriveY(155, 1);
-                    driveAuto(-1, 0, 0, 1, -155);
-                    Grabber.setPosition(0);
+                    driveAuto(1, 0, 0, 1, 75);
+                    //Grabber.setPosition(0);
                     sleep(SERVO_WAIT_TIME);
 
-
-                    //DriveY(-169, 1);
-                    driveAuto(1, 0, 0, 1, 169);
-                    //distanceDrive(160);
-                    Grabber.setPosition(1);
+                    driveAuto(-1, 0, 0, 1, -80);
                     sleep(SERVO_WAIT_TIME);
 
+                    driveAuto(0, -1, 0, 1, -70);
 
-                    //DriveX(160, 1);
-                    driveAuto(0, 1, 0, 1, 160);
-                    //DriveY(105, 1);
-                    driveAuto(-1, 0, 0, 1, -95);
-                    //DriveX(-57, 1);
-                    driveAuto(0, -1, 0, 1, -35);
-                    //DriveX(140, 1);
-                    driveAuto(0, 1, 0, 1, 140);
+                    driveAuto(1, 0, 0, 1, 45);
+
+                    driveAuto(0, 1, 0, 1, 42);
+
+                    driveAuto(0, -1, 0, 1, -55);
                     break;
                 }
                 if (position == RIGHT) {
-                    //DriveX(-160, 1);
-                    driveAuto(0, -1, 0, 1, -160);
 
-                    //DriveY(155, 1);
-                    driveAuto(-1, 0, 0, 1, -155);
-                    Grabber.setPosition(0);
+                    driveAuto(0, 1, 0, 1, 60);
+
+                    driveAuto(1, 0, 0, .25, 75);
+                    //Grabber.setPosition(0);
                     sleep(SERVO_WAIT_TIME);
-                    //idle();
 
-                    //DriveY(-169, 1);
-                    driveAuto(1, 0, 0, 1, 169);
-                    //distanceDrive(160);
-                    Grabber.setPosition(1);
+                    driveAuto(-1, 0, 0, .25, -80);
+                   // Grabber.setPosition(1);
                     sleep(SERVO_WAIT_TIME);
-                    //idle();
 
-                    //DriveX(160, 1);
-                    driveAuto(0, 1, 0, 1, 160);
-                    //DriveY(105, 1);
-                    driveAuto(-1, 0, 0, 1, -95);
+                    driveAuto(0, -1, 0, 1, -70);
 
-                    //DriveX(-57, 1);
-                    driveAuto(0, -1, 0, 1, -35);
+                    driveAuto(1, 0, 0, 1, 45);
 
-                    //DriveY(-160, 1);
-                    driveAuto(1, 0, 0, 1, 115);
-                    //distanceDrive(145);
-                    //DriveX(140, 1);
-                    driveAuto(0, 1, 0, 1, 140);
+                    driveAuto(0, 1, 0, 1, 42);
+
+                    driveAuto(-1, 0, 0, 1, -50);
+
+                    driveAuto(0, -1, 0, 1, -55);
                     break;
                 }
 
             }
             if (alliance == RED) {
                 if (position == RIGHT) {
-                    // DriveX(160, 1);
-                    driveAuto(0, 1, 0, 1, 160);
 
-                    //DriveY(155, 1);
-                    driveAuto(-1, 0, 0, 1, -155);
-                    Grabber.setPosition(0);
+                    driveAuto(0, -1, 0, 1, -60);
+
+
+                    driveAuto(1, 0, 0, .25, 80);
+                    //Grabber.setPosition(0);
                     sleep(SERVO_WAIT_TIME);
-                    //idle();
 
-                    //DriveY(-170, 1);
-                    driveAuto(1, 0, 0, 1, 169);
-                    //distanceDrive(160);
-                    Grabber.setPosition(1);
+                    driveAuto(-1, 0, 0, .25, -82);
+                    //Grabber.setPosition(1);
                     sleep(CYCLE_MS);
-                    //idle();
 
-                    // DriveX(-220, 1);
-                    driveAuto(0, -1, 0, 1, -160);
+                    driveAuto(0, 1, 0, 1, 70);
 
-                    //DriveY(120, 1);
-                    driveAuto(-1, 0, 0, 1, -115);
+                    driveAuto(1, 0, 0, 1, 42);
 
-                    //DriveX(40, 1);
-                    driveAuto(0, 1, 0, 1, 35);
+                    driveAuto(0, -1, 0, 1, -38);
 
-                    //DriveX(-140, 1);
-                    driveAuto(0, -1, 0, 1, -140);
+                    driveAuto(0, 1, 0, 1, 58);
                     break;
                 }
                 if (position == LEFT) {
-                    //DriveX(160, 1);
-                    driveAuto(0, 1, 0, 1, 160);
+                    driveAuto(0, -1, 0, 1, -60);
 
-                    //DriveY(155, 1);
-                    driveAuto(-1, 0, 0, 1, -155);
-                    Grabber.setPosition(0);
+                    driveAuto(1, 0, 0, 1, 75);
+                   // Grabber.setPosition(0);
                     sleep(SERVO_WAIT_TIME);
-                    //idle();
 
-                    driveAuto(1, 0, 0, 1, 169);
-                    //distanceDrive(160);
-                    Grabber.setPosition(1);
+
+
+                    driveAuto(-1, 0, 0, 1, -80);
+                  //  Grabber.setPosition(1);
                     sleep(SERVO_WAIT_TIME);
-                    //idle();
 
-                    //DriveX(-180, 1);
-                    driveAuto(0, -1, 0, 1, -160);
+                    driveAuto(0, 1, 0, 1, 70);
 
-                    // DriveY(110, 1);
-                    driveAuto(-1, 0, 0, 1, -95);
+                    driveAuto(1, 0, 0, 1, 45);
 
-                    //DriveX(70, 1);
-                    driveAuto(0, 1, 0, 1, 35);
+                    driveAuto(0, -1, 0, 1, -42);
 
-                    //DriveY(-120, 1);
-                    driveAuto(1, 0, 0, 1, 115);
-                    //distanceDrive(145);
+                    driveAuto(-1, 0, 0, 1, -50);
 
-                    //DriveX(-140, 1);
-                    driveAuto(0, -1, 0, 1, -140);
+                    driveAuto(0, 1, 0, 1, 55);
                     break;
                 }
             }
