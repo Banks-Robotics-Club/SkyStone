@@ -119,14 +119,10 @@
      RB = hardwareMap.crservo.get("RB");
      LI = hardwareMap.crservo.get("LI");
      RI = hardwareMap.crservo.get("RI");
-<<<<<<< HEAD
-=======
      leftFoundationGrabber = hardwareMap.servo.get("LFG");
      leftFoundationGrabber.setPosition(-1);
      rightFoundationGrabbet = hardwareMap.servo.get("RFG");
      rightFoundationGrabbet.setPosition(-1);
-    // sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
->>>>>>> 2e493f5bb9bf59bd43fdcc6224b6ded112640655
      leftTouchSensor = hardwareMap.get(TouchSensor.class, "LT");
      rightTouchSensor = hardwareMap.get(TouchSensor.class, "RT");
      leftColorSensor = hardwareMap.get(ColorSensor.class, "LeftColorSensor");
@@ -141,7 +137,6 @@
      LB.setDirection(DcMotorSimple.Direction.REVERSE);
      RF.setDirection(DcMotorSimple.Direction.FORWARD);
      RB.setDirection(DcMotorSimple.Direction.FORWARD);
-<<<<<<< HEAD
         CapGrab.setPosition(0.95);
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
@@ -151,8 +146,6 @@
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.loggingEnabled      = false;
-=======
->>>>>>> 2e493f5bb9bf59bd43fdcc6224b6ded112640655
      }
 
      public void motorForward(DcMotor motor, Integer distance, double power) {
@@ -585,9 +578,6 @@
          stopDriveMotors();
      }
 
-<<<<<<< HEAD
-     public void capstoneGrabber() {
-=======
      public void strafeLeftAuto() {
          driveAuto(0,1,0,.5,7);
      }
@@ -597,34 +587,6 @@
      }
 
 
-     /*public void capstoneGrabber() {
->>>>>>> 2e493f5bb9bf59bd43fdcc6224b6ded112640655
-         if (gamepad1.a) {
-             CapGrab.setPosition(0);
-         } else if (gamepad1.b) {
-             CapGrab.setPosition(-0.4);
-         } else {
-             CapGrab.setPosition(0.95);
-         }
-     }*/
-
-     /*public void capstoneControl(){
-         if (gamepad1.a && capstonebuttonpushed == false){
-             CapGrab.setPosition(0);
-             capstonebuttonpushed = true;
-         } else {
-             capstonebuttonpushed = false;
-         }
-
-         if (gamepad1.b && capstonebuttonnotPushed == false){
-             CapGrab.setPosition(1);
-             capstonebuttonnotPushed = true;
-         } else {
-             capstonebuttonnotPushed = false;
-         }
-
-
-     }*/
 
      public boolean distanceDone(double target){
          if ((abs(flm.getCurrentPosition()) <= abs(target)) && (abs(blm.getCurrentPosition()) <= abs(target))
@@ -688,7 +650,6 @@
          }
      }
 
-<<<<<<< HEAD
      public void initPID() {
          // Set PID proportional value to start reducing power at about 50 degrees of rotation.
          // P by itself may stall before turn completed so we add a bit of I (integral) which
@@ -789,11 +750,6 @@
                  //rightMotor.setPower(-power);
                  sleep(100);
              }
-=======
-     public void intakeActuation (){
-         //if
-     }
->>>>>>> 2e493f5bb9bf59bd43fdcc6224b6ded112640655
 
              do
              {
