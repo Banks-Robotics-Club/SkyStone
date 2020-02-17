@@ -26,7 +26,7 @@ public class GrabNGo extends CommonOpMode {
             // distance (in cm) to ticks = ((d/31.4)=r*1120)
             if (alliance == BLUE) {
                 if (position == LEFT) {
-                    driveAuto(0,1,0,1,60);
+                    driveAuto(0, 1, 0, 1, 60);
 
                     driveAuto(1, 0, 0, 1, 75);
                     leftFoundationGrabber.setPosition(1);
@@ -92,7 +92,7 @@ public class GrabNGo extends CommonOpMode {
 
                     driveAuto(0, -1, 0, .1, 70);
 
-                    driveAuto(- 1, 0, 0, .1, 42);
+                    driveAuto(-1, 0, 0, .1, 42);
 
                     driveAuto(0, 1, 0, .1, -38);
 
@@ -106,7 +106,6 @@ public class GrabNGo extends CommonOpMode {
                     leftFoundationGrabber.setPosition(1);
                     rightFoundationGrabbet.setPosition(0);
                     sleep(SERVO_WAIT_TIME);
-
 
 
                     driveAuto(-1, 0, 0, 1, -80);
