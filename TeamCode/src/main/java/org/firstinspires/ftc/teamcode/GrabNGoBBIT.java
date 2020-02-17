@@ -24,14 +24,14 @@ public class GrabNGoBBIT extends CommonOpMode {
 
                     //DriveY(155, 1);
                     driveAuto(-1, 0, 0, 1, -155);
-                    Grabber.setPosition(0);
+                    //Grabber.setPosition(0);
                     sleep(SERVO_WAIT_TIME);
 
 
                     //DriveY(-169, 1);
                     driveAuto(-1, 0, 0, 1, -169);
                     //distanceDrive(160);
-                    Grabber.setPosition(1);
+                    //Grabber.setPosition(1);
                     sleep(SERVO_WAIT_TIME);
 
                     driveAuto(0,1,0,1,240);
@@ -44,14 +44,14 @@ public class GrabNGoBBIT extends CommonOpMode {
 
                     //DriveY(155, 1);
                     driveAuto(-1, 0, 0, 1, -155);
-                    Grabber.setPosition(0);
+                    //Grabber.setPosition(0);
                     sleep(SERVO_WAIT_TIME);
                     //idle();
 
                     //DriveY(-169, 1);
                     driveAuto(-1, 0, 0, 1, -169);
                     //distanceDrive(160);
-                    Grabber.setPosition(1);
+                    //Grabber.setPosition(1);
                     sleep(SERVO_WAIT_TIME);
                     //idle();
 
@@ -68,14 +68,14 @@ public class GrabNGoBBIT extends CommonOpMode {
 
                     //DriveY(155, 1);
                     driveAuto(-1, 0, 0, 1, -155);
-                    Grabber.setPosition(0);
+                    //Grabber.setPosition(0);
                     sleep(SERVO_WAIT_TIME);
                     //idle();
 
                     //DriveY(-170, 1);
                     driveAuto(-1, 0, 0, 1, -169);
                     //distanceDrive(160);
-                    Grabber.setPosition(1);
+                    //Grabber.setPosition(1);
                     sleep(CYCLE_MS);
                     //idle();
 
@@ -87,13 +87,13 @@ public class GrabNGoBBIT extends CommonOpMode {
 
                     //DriveY(155, 1);
                     driveAuto(-1, 0, 0, 1, -155);
-                    Grabber.setPosition(0);
+                    //Grabber.setPosition(0);
                     sleep(SERVO_WAIT_TIME);
                     //idle();
 
                     driveAuto(1, 0, 0, 1, 169);
                     //distanceDrive(160);
-                    Grabber.setPosition(1);
+                    //Grabber.setPosition(1);
                     sleep(SERVO_WAIT_TIME);
                     //idle();
 

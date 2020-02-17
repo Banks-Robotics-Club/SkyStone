@@ -6,13 +6,14 @@
  import com.qualcomm.robotcore.hardware.ColorSensor;
  import com.qualcomm.robotcore.hardware.DcMotor;
  import com.qualcomm.robotcore.hardware.DcMotorSimple;
- import com.qualcomm.robotcore.hardware.DigitalChannel;
- import com.qualcomm.robotcore.hardware.DistanceSensor;
  import com.qualcomm.robotcore.hardware.Servo;
  import com.qualcomm.robotcore.hardware.TouchSensor;
  import com.qualcomm.robotcore.util.ElapsedTime;
-
- import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+ import com.qualcomm.hardware.bosch.BNO055IMU;
+ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
  import static java.lang.Math.abs;
  // Gobilda 5202 yellow jaket ticks 383.6 = 384
@@ -28,7 +29,6 @@
      boolean grabberbuttonpushed = false;
      boolean grabberbuttonnotPushed = false;
      int currentHeight;
-     //double AndyMarkToGobuilda = 383.6/537.5;
 
      static boolean RED = true;
      static boolean BLUE = false;
@@ -47,7 +47,6 @@
      public DcMotor RIGHTSUCTIONMOTOR;
      public DcMotor leftarm;
      public DcMotor rightarm;
-     public DcMotor lift;
      public CRServo LF;
      public CRServo RF;
      public CRServo RB;
@@ -58,20 +57,20 @@
      public Servo CapGrab;
      public Servo leftactuator;
      public Servo rightactuator;
-     //private DistanceSensor sensorRange;
-     double frPower = 0;
-     double flPower = 0;
-     double blPower = 0;
-     double brPower = 0;
-     double clockwiseRotation = 0;
-     double counterclockwiseRotation = 0;
      static final int    CYCLE_MS    =   300;
 
      public TouchSensor leftTouchSensor;
      public TouchSensor rightTouchSensor;
      public ColorSensor leftColorSensor;
      public ColorSensor rightColorSensor;
-     public DistanceSensor distanceSensor;
+
+     public BNO055IMU        imu;
+     Orientation             lastAngles = new Orientation();
+     double                  globalAngle, pidPower = .20, correction, rotation;
+     BNO055IMU.Parameters    parameters = new BNO055IMU.Parameters();
+     PIDController           pidRotate, pidDrive;
+
+
 
      public void allianceChooser() {
          if (gamepad1.b) {
@@ -107,14 +106,12 @@
      CapGrab = hardwareMap.servo.get("CapGrab");
      leftarm = hardwareMap.dcMotor.get("leftarm");
      rightarm = hardwareMap.dcMotor.get("rightarm");
-    // lift = hardwareMap.dcMotor.get("lift");
      LF = hardwareMap.crservo.get("LF");
      RF = hardwareMap.crservo.get("RF");
      LB = hardwareMap.crservo.get("LB");
      RB = hardwareMap.crservo.get("RB");
      LI = hardwareMap.crservo.get("LI");
      RI = hardwareMap.crservo.get("RI");
-    // sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
      leftTouchSensor = hardwareMap.get(TouchSensor.class, "LT");
      rightTouchSensor = hardwareMap.get(TouchSensor.class, "RT");
      leftColorSensor = hardwareMap.get(ColorSensor.class, "LeftColorSensor");
@@ -125,13 +122,19 @@
      brm.setDirection(DcMotorSimple.Direction.FORWARD);
      leftarm.setDirection(DcMotorSimple.Direction.FORWARD);
      rightarm.setDirection(DcMotorSimple.Direction.REVERSE);
-     //lift.setDirection(DcMotorSimple.Direction.FORWARD);
-     //lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
      LF.setDirection(DcMotorSimple.Direction.REVERSE);
      LB.setDirection(DcMotorSimple.Direction.REVERSE);
      RF.setDirection(DcMotorSimple.Direction.FORWARD);
      RB.setDirection(DcMotorSimple.Direction.FORWARD);
-         CapGrab.setPosition(0.95);
+        CapGrab.setPosition(0.95);
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
+        parameters.mode                = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled      = false;
      }
 
      public void motorForward(DcMotor motor, Integer distance, double power) {
@@ -172,7 +175,6 @@
      public void setSpeed() {
          slowDown();
          speedUp();
-         // return speedAdjust;
      }
 
      private void slowDown() {
@@ -270,7 +272,7 @@
      }
 */
 
-     public void driveAuto(double straight, double strafe, double turn, double speed, int distance_cm) {
+     /* public void driveAuto(double straight, double strafe, double turn, double speed, int distance_cm) {
          double distance_encoder = (int)((distance_cm * 383.6) / 31.4);
 
          resetDrive();
@@ -282,9 +284,9 @@
          lessThanEqualTelemetry(distance_encoder);
          motorSpeedRelay();
          stopDriveMotors();
-     }
+     } */
 
-     public void lessThanEqualTelemetry (double target){
+     public void lessThanEqualDistance (double target){
          while (opModeIsActive() && distanceDone(target)) {
                 sleep(CYCLE_MS);
                 idle();
@@ -293,7 +295,7 @@
      }
 
      public void resetDrive() {
-        flm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+         flm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
          blm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
          frm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
          brm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -428,70 +430,6 @@
          rightarm.setPower(power);
      }
 
-     /* public void arms() {
-         boolean armtoplimit = leftarm.getCurrentPosition() <= 7000 && rightarm.getCurrentPosition() <= 7000;
-         boolean armlowlimit = leftarm.getCurrentPosition() >= 0 && rightarm.getCurrentPosition() >= 0;
-
-         if (gamepad2.a && armtoplimit)  {
-             leftarm.setPower(1);
-             rightarm.setPower(1);
-         } else if (gamepad2.b && armlowlimit) {
-             leftarm.setPower(-1);
-             rightarm.setPower(-1);
-         } else {
-             leftarm.setPower(0);
-             rightarm.setPower(0);
-         }
-         telemetry.addData("LeftArmTicks", leftarm.getCurrentPosition());
-         telemetry.addData("RightArmTicks", rightarm.getCurrentPosition());
-         telemetry.update();
-     } */
-
-
-     /* public void incrementArms() {
-         boolean armtoplimit = leftarm.getCurrentPosition() <= 7000 && rightarm.getCurrentPosition() <= 7000;
-         boolean armlowlimit = leftarm.getCurrentPosition() >= 0 && rightarm.getCurrentPosition() >= 0;
-
-         if (gamepad2.a && armtoplimit) {
-             leftarm.setTargetPosition((blockHeight * (increment - 1) + 775));
-             rightarm.setTargetPosition((blockHeight * (increment - 1) + 775));
-             armsPower(1);
-             armsRunToPosition();
-         } else if (gamepad2.b && armlowlimit) {
-             leftarm.setTargetPosition(0);
-             rightarm.setTargetPosition(0);
-             armsPower(-1);
-             armsRunToPosition();
-             armsReset();
-         } else {
-             // armsPower(0);
-         }
-
-     } */
-
-     /* public void arms() {
-         boolean armtoplimit = leftarm.getCurrentPosition() <= 9992 && rightarm.getCurrentPosition() <= 9992 ;
-         boolean armlowlimit = leftarm.getCurrentPosition() >= 0 && rightarm.getCurrentPosition() >= 0;
-
-         if (gamepad2.a && armtoplimit && (increment >= 2))  {
-             leftarm.setTargetPosition(( blockHeight*(increment-1)+200 ));//267
-             rightarm.setTargetPosition((blockHeight*(increment-1)+200 ));
-             armsPower(.5);
-             armsRunToPosition();
-         } else if (gamepad2.b && armlowlimit) {
-             leftarm.setTargetPosition(0);
-             rightarm.setTargetPosition(0);
-             armsPower(-.5);
-             armsRunToPosition();
-             armsReset();
-         } else if (gamepad2.a && armtoplimit && (increment == 1)) {
-             leftarm.setTargetPosition(571);
-             rightarm.setTargetPosition(571);
-             armsPower(.5);
-             armsRunToPosition();
-         }
-     } */
-
      public void arms() {
 
          int maxBlock = 5;
@@ -570,20 +508,6 @@
          runWithoutEncoders();
      }
 
-     /*public void lift() {
-          if (gamepad2.x) {
-           lift.setPower(0.5);
-           telemetry.addData("Ticks", lift.getCurrentPosition());
-           telemetry.update();
-         } else if (gamepad2.y) {
-            lift.setPower(-0.5);
-            telemetry.addData("Ticks", lift.getCurrentPosition());
-            telemetry.update();
-         }  else {
-            lift.setPower(0);
-         }
-     }*/
-
      public void blockStrafeLeft() {
        flm.setPower(.2);
        blm.setPower(-.4);
@@ -636,15 +560,6 @@
          }
          stopDriveMotors();
      }
-
-     public void strafeLeftAuto() {
-         driveAuto(0,1,0,.5,7);
-     }
-
-     public void strafeRightAuto() {
-         driveAuto(0,-1,0,.5,-13);
-     }
-
 
      public void capstoneGrabber() {
          if (gamepad1.a) {
@@ -709,8 +624,6 @@
          }
      }
 
-
-
      public boolean checkSkystone() {
          //100 is the deciding constant that determines either stone or Skystone
          if (abs(leftColorSensor.red()-rightColorSensor.red())>100){
@@ -720,27 +633,238 @@
          }
      }
 
-     //public void
+     public void initPID() {
+         // Set PID proportional value to start reducing power at about 50 degrees of rotation.
+         // P by itself may stall before turn completed so we add a bit of I (integral) which
+         // causes the PID controller to gently increase power if the turn is not completed.
+         pidRotate = new PIDController(.003, .00003, 0);
 
-     /*public void touch() {
-         if (leftTouchSensor.isPressed() && gamepad2.left_bumper) {
-           driveAuto(0,-1,0,1,-100);
-         } else if(rightTouchSensor.isPressed() && gamepad2.right_bumper) {
-           driveAuto(0,1,0,1,100);
-         }
-     }*/
+         // Set PID proportional value to produce non-zero correction value when robot veers off
+         // straight line. P value controls how sensitive the correction is.
+         pidDrive = new PIDController(.05, 0, 0);
 
-     /*public void testServo() {
-         if (gamepad1.a) {
-             robot.myServo.setPosition(1);
-             sleep(500);
-             motorForward(robot.rightFrontDrive, 1000, 0.5);
-         } else if (gamepad1.b) {
-             robot.myServo.setPosition(0);
-             sleep(500);
-             motorBackward(robot.rightFrontDrive, 1000, 0.5);
+         telemetry.addData("Mode", "calibrating...");
+         telemetry.update();
+
+         // make sure the imu gyro is calibrated before continuing.
+         while (!isStopRequested() && !imu.isGyroCalibrated())
+         {
+             sleep(50);
+             idle();
          }
-     }*/
+     }
+
+     /**
+      * Resets the cumulative angle tracking to zero.
+      */
+     private void resetAngle()
+     {
+         lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+         globalAngle = 0;
+     }
+
+     /**
+      * Get current cumulative angle rotation from last reset.
+      * @return Angle in degrees. + = left, - = right.
+      */
+     public double getAngle()
+     {
+         // We experimentally determined the Z axis is the axis we want to use for heading angle.
+         // We have to process the angle because the imu works in euler angles so the Z axis is
+         // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
+         // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
+
+         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+         double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+
+         if (deltaAngle < -180)
+             deltaAngle += 360;
+         else if (deltaAngle > 180)
+             deltaAngle -= 360;
+
+         globalAngle += deltaAngle;
+
+         lastAngles = angles;
+
+         return globalAngle;
+     }
+
+     /**
+      * Rotate left or right the number of degrees. Does not support turning more than 180 degrees.
+      * @param degrees Degrees to turn, + is left - is right
+      */
+     public void rotate(int degrees, double power)
+     {
+         // restart imu angle tracking.
+         resetAngle();
+
+         // if degrees > 359 we cap at 359 with same sign as original degrees.
+         if (Math.abs(degrees) > 359) degrees = (int) Math.copySign(359, degrees);
+
+         // start pid controller. PID controller will monitor the turn angle with respect to the
+         // target angle and reduce power as we approach the target angle. This is to prevent the
+         // robots momentum from overshooting the turn after we turn off the power. The PID controller
+         // reports onTarget() = true when the difference between turn angle and target angle is within
+         // 1% of target (tolerance) which is about 1 degree. This helps prevent overshoot. Overshoot is
+         // dependant on the motor and gearing configuration, starting power, weight of the robot and the
+         // on target tolerance. If the controller overshoots, it will reverse the sign of the output
+         // turning the robot back toward the setpoint value.
+
+         pidRotate.reset();
+         pidRotate.setSetpoint(degrees);
+         pidRotate.setInputRange(0, degrees);
+         pidRotate.setOutputRange(0, power);
+         pidRotate.setTolerance(1);
+         pidRotate.enable();
+
+         // getAngle() returns + when rotating counter clockwise (left) and - when rotating
+         // clockwise (right).
+
+         // rotate until turn is completed.
+
+         if (degrees < 0)
+         {
+             // On right turn we have to get off zero first.
+             while (opModeIsActive() && getAngle() == 0)
+             {
+                 //leftMotor.setPower(power);
+                 //rightMotor.setPower(-power);
+                 sleep(100);
+             }
+
+             do
+             {
+                 power = pidRotate.performPID(getAngle()); // power will be - on right turn.
+                 //leftMotor.setPower(-power);
+                 //rightMotor.setPower(power);
+             } while (opModeIsActive() && !pidRotate.onTarget());
+         }
+         else    // left turn.
+             do
+             {
+                 power = pidRotate.performPID(getAngle()); // power will be + on left turn.
+                 //leftMotor.setPower(-power);
+                 //rightMotor.setPower(power);
+             } while (opModeIsActive() && !pidRotate.onTarget());
+
+         // turn the motors off.
+         //rightMotor.setPower(0);
+         //leftMotor.setPower(0);
+
+         rotation = getAngle();
+
+         // wait for rotation to stop.
+         sleep(500);
+
+         // reset angle tracking on new heading.
+         resetAngle();
+     }
+
+     public void driveStraightForward(int distance_cm) {
+         double distance_encoder = (int)((distance_cm * 383.6) / 31.4);
+
+         resetPIDandMotors();
+
+         while (!distanceDone(distance_encoder)) {
+             correction = pidDrive.performPID(getAngle());
+             telemetryPID();
+             blm.setPower((pidPower - (correction / 2)));
+             flm.setPower((pidPower - (correction / 2)));
+             brm.setPower((pidPower + (correction / 2)));
+             frm.setPower((pidPower + (correction / 2)));
+         }
+     }
+
+     public void driveStraightBackward(int distance_cm) {
+         double distance_encoder = (int)((distance_cm * 383.6) / 31.4);
+
+         resetPIDandMotors();
+
+         while (!distanceDone(distance_encoder)) {
+             correction = pidDrive.performPID(getAngle());
+             telemetryPID();
+             blm.setPower(-(pidPower + (correction / 2)));
+             flm.setPower(-(pidPower + (correction / 2)));
+             brm.setPower(-(pidPower - (correction / 2)));
+             frm.setPower(-(pidPower - (correction / 2)));
+         }
+     }
+
+     public void strafeLeft(int distance_cm) {
+         double distance_encoder = (int)((distance_cm * 383.6) / 31.4);
+
+         resetPIDandMotors();
+
+         while (!distanceDone(distance_encoder)) {
+             correction = pidDrive.performPID(getAngle());
+             telemetryPID();
+             if (correction >= 0) {
+                 blm.setPower(pidPower + correction / 2);
+                 flm.setPower(-(pidPower + correction / 2));
+                 brm.setPower(-pidPower);
+                 frm.setPower(pidPower);
+             } else {
+                 blm.setPower(pidPower);
+                 flm.setPower(-pidPower);
+                 brm.setPower(-pidPower + correction / 2);
+                 frm.setPower(pidPower - correction / 2);
+             }
+         }
+     }
+
+     public void strafeRight(int distance_cm) {
+         double distance_encoder = (int)((distance_cm * 383.6) / 31.4);
+
+         resetPIDandMotors();
+
+         while (!distanceDone(distance_encoder)) {
+             correction = pidDrive.performPID(getAngle());
+             telemetryPID();
+             if (correction >= 0) {
+                 blm.setPower(-pidPower);
+                 flm.setPower(pidPower);
+                 brm.setPower(pidPower + correction / 2);
+                 frm.setPower(-(pidPower + correction / 2));
+             } else {
+                 blm.setPower(-pidPower + correction / 2);
+                 flm.setPower(pidPower - correction / 2);
+                 brm.setPower(pidPower);
+                 frm.setPower(-pidPower);
+             }
+         }
+     }
+
+     public void resetPIDandMotors() {
+         stopDriveMotors();
+         resetDrive();
+         pidRotate.reset();
+         pidDrive.setSetpoint(0);
+         pidDrive.setOutputRange(0, pidPower);
+         pidDrive.setInputRange(-90, 90);
+         pidDrive.enable();
+     }
+
+     public void telemetryPID() {
+         telemetry.addData("1 imu heading", lastAngles.firstAngle);
+         telemetry.addData("2 global heading", globalAngle);
+         telemetry.addData("3 correction", correction);
+         telemetry.addData("4 turn rotation", rotation);
+         telemetry.update();
+     }
+
+     public void driveAuto(double straight, double strafe, double turn, double speed, int distance_cm) {
+         double distance_encoder = (int)((distance_cm * 383.6) / 31.4);
+
+         resetDrive();
+
+         blm.setPower((+straight - strafe + turn) * (-speed));
+         flm.setPower((-straight - strafe - turn) * (-speed));
+         brm.setPower((+straight + strafe - turn) * (-speed));
+         frm.setPower((-straight + strafe + turn) * (-speed));
+         lessThanEqualDistance(distance_encoder);
+         motorSpeedRelay();
+         stopDriveMotors();
+     }
  }
-
-   
