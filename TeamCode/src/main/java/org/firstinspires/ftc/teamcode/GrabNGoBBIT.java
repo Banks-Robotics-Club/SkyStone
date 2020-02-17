@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous(name = "GrabNGoBBIT", group = "")
 public class GrabNGoBBIT extends CommonOpMode {
+
     static final int SERVO_WAIT_TIME = 1000;
 
     @Override

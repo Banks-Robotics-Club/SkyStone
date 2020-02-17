@@ -28,6 +28,8 @@
      boolean incrementDown = false;
      boolean grabberbuttonpushed = false;
      boolean grabberbuttonnotPushed = false;
+     boolean capstonebuttonpushed = false;
+     boolean capstonebuttonnotPushed = false;
      int currentHeight;
 
      static boolean RED = true;
@@ -54,6 +56,8 @@
      public CRServo LI;
      public CRServo RI;
      //public Servo Grabber;
+     public Servo leftFoundationGrabber;
+     public Servo rightFoundationGrabbet;
      public Servo CapGrab;
      public Servo leftactuator;
      public Servo rightactuator;
@@ -102,8 +106,11 @@
      RIGHTSUCTIONMOTOR = hardwareMap.dcMotor.get("rsm");
      leftactuator  = hardwareMap.servo.get("LA");
      rightactuator = hardwareMap.servo.get("RA");
+     leftactuator.setPosition(0);
+     rightactuator.setPosition(1);
      //Grabber = hardwareMap.servo.get("Grabber");
      CapGrab = hardwareMap.servo.get("CapGrab");
+     CapGrab.setPosition(-1);
      leftarm = hardwareMap.dcMotor.get("leftarm");
      rightarm = hardwareMap.dcMotor.get("rightarm");
      LF = hardwareMap.crservo.get("LF");
@@ -112,6 +119,14 @@
      RB = hardwareMap.crservo.get("RB");
      LI = hardwareMap.crservo.get("LI");
      RI = hardwareMap.crservo.get("RI");
+<<<<<<< HEAD
+=======
+     leftFoundationGrabber = hardwareMap.servo.get("LFG");
+     leftFoundationGrabber.setPosition(-1);
+     rightFoundationGrabbet = hardwareMap.servo.get("RFG");
+     rightFoundationGrabbet.setPosition(-1);
+    // sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
+>>>>>>> 2e493f5bb9bf59bd43fdcc6224b6ded112640655
      leftTouchSensor = hardwareMap.get(TouchSensor.class, "LT");
      rightTouchSensor = hardwareMap.get(TouchSensor.class, "RT");
      leftColorSensor = hardwareMap.get(ColorSensor.class, "LeftColorSensor");
@@ -126,6 +141,7 @@
      LB.setDirection(DcMotorSimple.Direction.REVERSE);
      RF.setDirection(DcMotorSimple.Direction.FORWARD);
      RB.setDirection(DcMotorSimple.Direction.FORWARD);
+<<<<<<< HEAD
         CapGrab.setPosition(0.95);
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
@@ -135,6 +151,8 @@
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.loggingEnabled      = false;
+=======
+>>>>>>> 2e493f5bb9bf59bd43fdcc6224b6ded112640655
      }
 
      public void motorForward(DcMotor motor, Integer distance, double power) {
@@ -252,35 +270,37 @@
          brm.setPower((yAxis - xAxis + turn) * (-speedAdjust/10));
          frm.setPower((yAxis + xAxis + turn) * (-speedAdjust/10));
      }
-
-   /*  public void grabberControl(){
+     //changed the method to account for two foundation grabbers
+     public void foundationGrabberControl(){
          if (gamepad1.left_trigger == 1 && grabberbuttonpushed == false){
-             Grabber.setPosition(0);
+             leftFoundationGrabber.setPosition(0);
+             rightFoundationGrabbet.setPosition(1);
              grabberbuttonpushed = true;
          } else {
              grabberbuttonpushed = false;
          }
 
          if (gamepad1.right_trigger == 1 && grabberbuttonnotPushed == false){
-             Grabber.setPosition(1);
+             leftFoundationGrabber.setPosition(1);
+             rightFoundationGrabbet.setPosition(0);
              grabberbuttonnotPushed = true;
-         }else {
+         } else {
              grabberbuttonnotPushed = false;
          }
 
 
      }
-*/
+
 
      /* public void driveAuto(double straight, double strafe, double turn, double speed, int distance_cm) {
          double distance_encoder = (int)((distance_cm * 383.6) / 31.4);
 
          resetDrive();
-
-         blm.setPower((+straight - strafe + turn) * (-speed));
-         flm.setPower((-straight - strafe - turn) * (-speed));
-         brm.setPower((+straight + strafe - turn) * (-speed));
-         frm.setPower((-straight + strafe + turn) * (-speed));
+         //DON'T CHANGE!!!!!
+         blm.setPower((straight + strafe - turn) * (-speed));
+         flm.setPower((straight - strafe - turn) * (-speed));
+         brm.setPower((straight - strafe + turn) * (-speed));
+         frm.setPower((straight + strafe + turn) * (-speed));
          lessThanEqualTelemetry(distance_encoder);
          motorSpeedRelay();
          stopDriveMotors();
@@ -303,6 +323,8 @@
          blm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
          frm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
          brm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
      }
 
      public void resetDriveWithoutEncoder(){
@@ -324,24 +346,24 @@
      }
 
      public void stopDriveMotors(){
-      flm.setPower(0);
-      blm.setPower(0);
-      frm.setPower(0);
-      brm.setPower(0);
+        flm.setPower(0);
+        blm.setPower(0);
+        frm.setPower(0);
+        brm.setPower(0);
      }
 
      public void setDrivePower(double DrivePower) {
-       flm.setPower(DrivePower);
-       blm.setPower(DrivePower);
-       frm.setPower(DrivePower);
-       brm.setPower(DrivePower);
+        flm.setPower(DrivePower);
+        blm.setPower(DrivePower);
+        frm.setPower(DrivePower);
+        brm.setPower(DrivePower);
      }
 
      public void runToPosition() {
-       flm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-       blm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-       frm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-       brm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        flm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        blm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        brm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
      }
 
      public void waitForMotorsAndRelayTelm() {
@@ -463,8 +485,8 @@
              LB.setPower(-1);
              RF.setPower(1);
              RB.setPower(-1);
-             //LI.setPower(1);
-            // RI.setPower(-1);
+             LI.setPower(1);
+             RI.setPower(-1);
              LEFTSUCTIONMOTOR.setPower(-1);
              RIGHTSUCTIONMOTOR.setPower(1);
              //driveAuto(1,0,0,1,30);
@@ -483,6 +505,8 @@
              LB.setPower(0);
              RF.setPower(0);
              RB.setPower(0);
+             LI.setPower(0);
+             RI.setPower(0);
              LEFTSUCTIONMOTOR.setPower(0);
              RIGHTSUCTIONMOTOR.setPower(0);
 
@@ -561,7 +585,20 @@
          stopDriveMotors();
      }
 
+<<<<<<< HEAD
      public void capstoneGrabber() {
+=======
+     public void strafeLeftAuto() {
+         driveAuto(0,1,0,.5,7);
+     }
+
+     public void strafeRightAuto() {
+         driveAuto(0,-1,0,.5,-13);
+     }
+
+
+     /*public void capstoneGrabber() {
+>>>>>>> 2e493f5bb9bf59bd43fdcc6224b6ded112640655
          if (gamepad1.a) {
              CapGrab.setPosition(0);
          } else if (gamepad1.b) {
@@ -569,7 +606,25 @@
          } else {
              CapGrab.setPosition(0.95);
          }
-     }
+     }*/
+
+     /*public void capstoneControl(){
+         if (gamepad1.a && capstonebuttonpushed == false){
+             CapGrab.setPosition(0);
+             capstonebuttonpushed = true;
+         } else {
+             capstonebuttonpushed = false;
+         }
+
+         if (gamepad1.b && capstonebuttonnotPushed == false){
+             CapGrab.setPosition(1);
+             capstonebuttonnotPushed = true;
+         } else {
+             capstonebuttonnotPushed = false;
+         }
+
+
+     }*/
 
      public boolean distanceDone(double target){
          if ((abs(flm.getCurrentPosition()) <= abs(target)) && (abs(blm.getCurrentPosition()) <= abs(target))
@@ -633,6 +688,7 @@
          }
      }
 
+<<<<<<< HEAD
      public void initPID() {
          // Set PID proportional value to start reducing power at about 50 degrees of rotation.
          // P by itself may stall before turn completed so we add a bit of I (integral) which
@@ -733,6 +789,11 @@
                  //rightMotor.setPower(-power);
                  sleep(100);
              }
+=======
+     public void intakeActuation (){
+         //if
+     }
+>>>>>>> 2e493f5bb9bf59bd43fdcc6224b6ded112640655
 
              do
              {
