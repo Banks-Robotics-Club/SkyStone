@@ -22,6 +22,8 @@ public class GrabNGo extends CommonOpMode {
 
         waitForStart();
 
+        setupPIDParameters();
+
         strafeRight(100);
         sleep(250);
         strafeLeft(100);

@@ -754,7 +754,7 @@ public abstract class CommonOpMode extends LinearOpMode {
     public void driveStraightForward(int distance_cm) {
         double distance_encoder = (int) ((distance_cm * 383.6) / 31.4);
 
-        resetMotors();
+        resetDriveWithoutEncoder();
 
         while (abs(flm.getCurrentPosition()) <= abs(distance_encoder)) {
             correction = pidDrive.performPID(getAngle());
@@ -770,7 +770,7 @@ public abstract class CommonOpMode extends LinearOpMode {
     public void driveStraightBackward(int distance_cm) {
         double distance_encoder = (int) ((distance_cm * 383.6) / 31.4);
 
-        resetMotors();
+        resetDriveWithoutEncoder();
 
         while (abs(flm.getCurrentPosition()) <= abs(distance_encoder)) {
             correction = pidDrive.performPID(getAngle());
@@ -786,7 +786,7 @@ public abstract class CommonOpMode extends LinearOpMode {
     public void strafeLeft(int distance_cm) {
         double distance_encoder = (int) ((distance_cm * 383.6) / 31.4);
 
-        resetMotors();
+        resetDriveWithoutEncoder();
 
         while (abs(flm.getCurrentPosition()) <= abs(distance_encoder)) {
             correction = pidDrive.performPID(getAngle());
@@ -802,7 +802,7 @@ public abstract class CommonOpMode extends LinearOpMode {
     public void strafeRight(int distance_cm) {
         double distance_encoder = (int) ((distance_cm * 383.6) / 31.4);
 
-        resetMotors();
+        resetDriveWithoutEncoder();
 
         while (abs(flm.getCurrentPosition()) <= abs(distance_encoder)) {
             correction = pidDrive.performPID(getAngle());
@@ -815,14 +815,12 @@ public abstract class CommonOpMode extends LinearOpMode {
         stopDriveMotors();
     }
 
-    public void resetMotors() {
-        stopDriveMotors();
-        resetDriveWithoutEncoder();
-        /*pidRotate.reset();
+    public void setupPIDParameters() {
+        pidRotate.reset();
         pidDrive.setSetpoint(0);
         pidDrive.setOutputRange(0, pidPower);
         pidDrive.setInputRange(-90, 90);
-        pidDrive.enable();*/
+        pidDrive.enable();
     }
 
     public void telemetryPID() {
