@@ -22,9 +22,17 @@ public class GrabNGo extends CommonOpMode {
 
         waitForStart();
 
-        while (opModeIsActive()) {
+        strafeRight(100);
+        sleep(250);
+        strafeLeft(100);
+        sleep(250);
+        driveStraightBackward(100);
+        sleep(250);
+        driveStraightForward(100);
+
+
             // distance (in cm) to ticks = ((d/31.4)=r*1120)
-            if (alliance == BLUE) {
+           /* if (alliance == BLUE) {
                 if (position == LEFT) {
                     driveAuto(0, 1, 0, 1, 60);
 
@@ -125,6 +133,6 @@ public class GrabNGo extends CommonOpMode {
                     break;
                 }
             }
-        }
+        }*/
     }
 }

@@ -10,6 +10,11 @@ public class TeleOpMA extends CommonOpMode {
 
         initHardware();
         armsResetAndRun();
+        initPID();
+
+        telemetry.addData("Mode", "waiting for start");
+        telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
+        telemetry.update();
 
         waitForStart();
 

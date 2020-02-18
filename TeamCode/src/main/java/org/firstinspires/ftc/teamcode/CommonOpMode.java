@@ -59,7 +59,7 @@ public abstract class CommonOpMode extends LinearOpMode {
     public CRServo RI;
     //public Servo Grabber;
     public Servo leftFoundationGrabber;
-    public Servo rightFoundationGrabbet;
+    public Servo rightFoundationGrabber;
     public Servo CapGrab;
     public Servo leftactuator;
     public Servo rightactuator;
@@ -72,7 +72,7 @@ public abstract class CommonOpMode extends LinearOpMode {
 
     public BNO055IMU imu;
     Orientation lastAngles = new Orientation();
-    double globalAngle, pidPower = .20, correction, rotation;
+    double globalAngle, pidPower = .60, correction, rotation;
     BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
     PIDController pidRotate, pidDrive;
 
@@ -98,6 +98,7 @@ public abstract class CommonOpMode extends LinearOpMode {
 
     }
 
+
     public void initHardware() {
         flm = hardwareMap.dcMotor.get("frm");
         blm = hardwareMap.dcMotor.get("blm");
@@ -108,7 +109,7 @@ public abstract class CommonOpMode extends LinearOpMode {
         leftactuator = hardwareMap.servo.get("LA");
         rightactuator = hardwareMap.servo.get("RA");
         leftactuator.setPosition(0);
-        rightactuator.setPosition(1);
+        rightactuator.setPosition(.8);
         //Grabber = hardwareMap.servo.get("Grabber");
         CapGrab = hardwareMap.servo.get("CapGrab");
         CapGrab.setPosition(-1);
@@ -122,8 +123,8 @@ public abstract class CommonOpMode extends LinearOpMode {
         RI = hardwareMap.crservo.get("RI");
         leftFoundationGrabber = hardwareMap.servo.get("LFG");
         leftFoundationGrabber.setPosition(-1);
-        rightFoundationGrabbet = hardwareMap.servo.get("RFG");
-        rightFoundationGrabbet.setPosition(-1);
+        rightFoundationGrabber = hardwareMap.servo.get("RFG");
+        rightFoundationGrabber.setPosition(-1);
         leftTouchSensor = hardwareMap.get(TouchSensor.class, "LT");
         rightTouchSensor = hardwareMap.get(TouchSensor.class, "RT");
         leftColorSensor = hardwareMap.get(ColorSensor.class, "LeftColorSensor");
@@ -269,7 +270,7 @@ public abstract class CommonOpMode extends LinearOpMode {
     public void foundationGrabberControl() {
         if (gamepad1.left_trigger == 1 && grabberbuttonpushed == false) {
             leftFoundationGrabber.setPosition(0);
-            rightFoundationGrabbet.setPosition(1);
+            rightFoundationGrabber.setPosition(1);
             grabberbuttonpushed = true;
         } else {
             grabberbuttonpushed = false;
@@ -277,7 +278,7 @@ public abstract class CommonOpMode extends LinearOpMode {
 
         if (gamepad1.right_trigger == 1 && grabberbuttonnotPushed == false) {
             leftFoundationGrabber.setPosition(1);
-            rightFoundationGrabbet.setPosition(0);
+            rightFoundationGrabber.setPosition(0);
             grabberbuttonnotPushed = true;
         } else {
             grabberbuttonnotPushed = false;
@@ -285,21 +286,6 @@ public abstract class CommonOpMode extends LinearOpMode {
 
 
     }
-
-
-     /* public void driveAuto(double straight, double strafe, double turn, double speed, int distance_cm) {
-         double distance_encoder = (int)((distance_cm * 383.6) / 31.4);
-
-         resetDrive();
-         //DON'T CHANGE!!!!!
-         blm.setPower((straight + strafe - turn) * (-speed));
-         flm.setPower((straight - strafe - turn) * (-speed));
-         brm.setPower((straight - strafe + turn) * (-speed));
-         frm.setPower((straight + strafe + turn) * (-speed));
-         lessThanEqualTelemetry(distance_encoder);
-         motorSpeedRelay();
-         stopDriveMotors();
-     } */
 
     public void lessThanEqualDistance(double target) {
         while (opModeIsActive() && distanceDone(target)) {
@@ -768,24 +754,25 @@ public abstract class CommonOpMode extends LinearOpMode {
     public void driveStraightForward(int distance_cm) {
         double distance_encoder = (int) ((distance_cm * 383.6) / 31.4);
 
-        resetPIDandMotors();
+        resetMotors();
 
-        while (!distanceDone(distance_encoder)) {
+        while (abs(flm.getCurrentPosition()) <= abs(distance_encoder)) {
             correction = pidDrive.performPID(getAngle());
             telemetryPID();
-            blm.setPower((pidPower - (correction / 2)));
-            flm.setPower((pidPower - (correction / 2)));
-            brm.setPower((pidPower + (correction / 2)));
-            frm.setPower((pidPower + (correction / 2)));
+            blm.setPower((pidPower + (correction / 2)));
+            flm.setPower((pidPower + (correction / 2)));
+            brm.setPower((pidPower - (correction / 2)));
+            frm.setPower((pidPower - (correction / 2)));
         }
+        stopDriveMotors();
     }
 
     public void driveStraightBackward(int distance_cm) {
         double distance_encoder = (int) ((distance_cm * 383.6) / 31.4);
 
-        resetPIDandMotors();
+        resetMotors();
 
-        while (!distanceDone(distance_encoder)) {
+        while (abs(flm.getCurrentPosition()) <= abs(distance_encoder)) {
             correction = pidDrive.performPID(getAngle());
             telemetryPID();
             blm.setPower(-(pidPower + (correction / 2)));
@@ -793,60 +780,49 @@ public abstract class CommonOpMode extends LinearOpMode {
             brm.setPower(-(pidPower - (correction / 2)));
             frm.setPower(-(pidPower - (correction / 2)));
         }
+        stopDriveMotors();
     }
 
     public void strafeLeft(int distance_cm) {
         double distance_encoder = (int) ((distance_cm * 383.6) / 31.4);
 
-        resetPIDandMotors();
+        resetMotors();
 
-        while (!distanceDone(distance_encoder)) {
+        while (abs(flm.getCurrentPosition()) <= abs(distance_encoder)) {
             correction = pidDrive.performPID(getAngle());
             telemetryPID();
-            if (correction >= 0) {
-                blm.setPower(pidPower + correction / 2);
-                flm.setPower(-(pidPower + correction / 2));
-                brm.setPower(-pidPower);
-                frm.setPower(pidPower);
-            } else {
-                blm.setPower(pidPower);
-                flm.setPower(-pidPower);
-                brm.setPower(-pidPower + correction / 2);
-                frm.setPower(pidPower - correction / 2);
-            }
+            blm.setPower(pidPower - (correction/2));
+            flm.setPower(-pidPower - (correction/2));
+            brm.setPower(-pidPower + (correction/2));
+            frm.setPower(pidPower + (correction/2));
         }
+        stopDriveMotors();
     }
 
     public void strafeRight(int distance_cm) {
         double distance_encoder = (int) ((distance_cm * 383.6) / 31.4);
 
-        resetPIDandMotors();
+        resetMotors();
 
-        while (!distanceDone(distance_encoder)) {
+        while (abs(flm.getCurrentPosition()) <= abs(distance_encoder)) {
             correction = pidDrive.performPID(getAngle());
             telemetryPID();
-            if (correction >= 0) {
-                blm.setPower(-pidPower);
-                flm.setPower(pidPower);
-                brm.setPower(pidPower + correction / 2);
-                frm.setPower(-(pidPower + correction / 2));
-            } else {
-                blm.setPower(-pidPower + correction / 2);
-                flm.setPower(pidPower - correction / 2);
-                brm.setPower(pidPower);
-                frm.setPower(-pidPower);
-            }
+            blm.setPower(-pidPower - (correction/2));
+            flm.setPower(pidPower - (correction/2));
+            brm.setPower(pidPower + (correction/2));
+            frm.setPower(-pidPower + (correction/2));
         }
+        stopDriveMotors();
     }
 
-    public void resetPIDandMotors() {
+    public void resetMotors() {
         stopDriveMotors();
-        resetDrive();
-        pidRotate.reset();
+        resetDriveWithoutEncoder();
+        /*pidRotate.reset();
         pidDrive.setSetpoint(0);
         pidDrive.setOutputRange(0, pidPower);
         pidDrive.setInputRange(-90, 90);
-        pidDrive.enable();
+        pidDrive.enable();*/
     }
 
     public void telemetryPID() {
@@ -854,6 +830,8 @@ public abstract class CommonOpMode extends LinearOpMode {
         telemetry.addData("2 global heading", globalAngle);
         telemetry.addData("3 correction", correction);
         telemetry.addData("4 turn rotation", rotation);
+        telemetry.addData("5 PID power", pidPower);
+        telemetry.addData("6 motor encoder", abs(flm.getCurrentPosition()));
         telemetry.update();
     }
 
@@ -862,10 +840,10 @@ public abstract class CommonOpMode extends LinearOpMode {
 
         resetDrive();
 
-        blm.setPower((+straight - strafe + turn) * (-speed));
-        flm.setPower((-straight - strafe - turn) * (-speed));
-        brm.setPower((+straight + strafe - turn) * (-speed));
-        frm.setPower((-straight + strafe + turn) * (-speed));
+        blm.setPower((straight + strafe - turn) * (-speed));
+        flm.setPower((straight - strafe - turn) * (-speed));
+        brm.setPower((straight - strafe + turn) * (-speed));
+        frm.setPower((straight + strafe + turn) * (-speed));
         lessThanEqualDistance(distance_encoder);
         motorSpeedRelay();
         stopDriveMotors();
