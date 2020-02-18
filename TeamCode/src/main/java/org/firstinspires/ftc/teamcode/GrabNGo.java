@@ -31,8 +31,9 @@ public class GrabNGo extends CommonOpMode {
         driveStraightBackward(100);
         sleep(250);
         driveStraightForward(100);
-
-
+        sleep(250);
+        rotate(-90, 0.5);
+        
             // distance (in cm) to ticks = ((d/31.4)=r*1120)
            /* if (alliance == BLUE) {
                 if (position == LEFT) {

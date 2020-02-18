@@ -721,34 +721,44 @@ public abstract class CommonOpMode extends LinearOpMode {
         if (degrees < 0) {
             // On right turn we have to get off zero first.
             while (opModeIsActive() && getAngle() == 0) {
-                //leftMotor.setPower(power);
-                //rightMotor.setPower(-power);
+                rightTurn(power);
                 sleep(100);
             }
 
             do {
                 power = pidRotate.performPID(getAngle()); // power will be - on right turn.
-                //leftMotor.setPower(-power);
-                //rightMotor.setPower(power);
+                rightTurn(power);
             } while (opModeIsActive() && !pidRotate.onTarget());
         } else    // left turn.
             do {
                 power = pidRotate.performPID(getAngle()); // power will be + on left turn.
-                //leftMotor.setPower(-power);
-                //rightMotor.setPower(power);
+                leftTurn(power);
             } while (opModeIsActive() && !pidRotate.onTarget());
 
         // turn the motors off.
-        //rightMotor.setPower(0);
-        //leftMotor.setPower(0);
+        stopDriveMotors();
 
         rotation = getAngle();
 
         // wait for rotation to stop.
-        sleep(500);
+        sleep(250);
 
         // reset angle tracking on new heading.
         resetAngle();
+    }
+
+    private void rightTurn(double turn) {
+        blm.setPower(-turn);
+        flm.setPower(-turn);
+        brm.setPower(turn);
+        frm.setPower(turn);
+    }
+
+    private void leftTurn(double turn) {
+        blm.setPower(turn);
+        flm.setPower(turn);
+        brm.setPower(-turn);
+        frm.setPower(-turn);
     }
 
     public void driveStraightForward(int distance_cm) {
