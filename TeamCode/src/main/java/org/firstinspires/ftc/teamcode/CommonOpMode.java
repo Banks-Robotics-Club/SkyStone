@@ -18,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 import static java.lang.Math.abs;
 
-// Gobilda 5202 yellow jaket ticks 383.6 = 384
+// GoBilda 5202 YellowJacket ticks 383.6 = 384
 public abstract class CommonOpMode extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -32,6 +32,10 @@ public abstract class CommonOpMode extends LinearOpMode {
     boolean grabberbuttonnotPushed = false;
     boolean capstonebuttonpushed = false;
     boolean capstonebuttonnotPushed = false;
+    boolean actuatorbuttonpushed = false;
+    boolean actuatorbuttonnotPushed = false;
+    boolean grabbersUp = true;
+    boolean yPressed = false;
     int currentHeight;
 
     static boolean RED = true;
@@ -57,7 +61,6 @@ public abstract class CommonOpMode extends LinearOpMode {
     public CRServo LB;
     public CRServo LI;
     public CRServo RI;
-    //public Servo Grabber;
     public Servo leftFoundationGrabber;
     public Servo rightFoundationGrabber;
     public Servo CapGrab;
@@ -108,9 +111,8 @@ public abstract class CommonOpMode extends LinearOpMode {
         RIGHTSUCTIONMOTOR = hardwareMap.dcMotor.get("rsm");
         leftactuator = hardwareMap.servo.get("LA");
         rightactuator = hardwareMap.servo.get("RA");
-        leftactuator.setPosition(0);
-        rightactuator.setPosition(.8);
-        //Grabber = hardwareMap.servo.get("Grabber");
+       // leftactuator.setPosition(0);
+       // rightactuator.setPosition(.8);
         CapGrab = hardwareMap.servo.get("CapGrab");
         CapGrab.setPosition(-1);
         leftarm = hardwareMap.dcMotor.get("leftarm");
@@ -122,9 +124,9 @@ public abstract class CommonOpMode extends LinearOpMode {
         LI = hardwareMap.crservo.get("LI");
         RI = hardwareMap.crservo.get("RI");
         leftFoundationGrabber = hardwareMap.servo.get("LFG");
-        leftFoundationGrabber.setPosition(-1);
+        leftFoundationGrabber.setPosition(.4);
         rightFoundationGrabber = hardwareMap.servo.get("RFG");
-        rightFoundationGrabber.setPosition(-1);
+        rightFoundationGrabber.setPosition(.6);
         leftTouchSensor = hardwareMap.get(TouchSensor.class, "LT");
         rightTouchSensor = hardwareMap.get(TouchSensor.class, "RT");
         leftColorSensor = hardwareMap.get(ColorSensor.class, "LeftColorSensor");
@@ -168,11 +170,11 @@ public abstract class CommonOpMode extends LinearOpMode {
         motor.setPower(0);
     }
 
-    public void setupMotorToRunToPosition(DcMotor motoR, Integer distance) {
-        motoR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motoR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motoR.setTargetPosition(distance);
-        motoR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    public void setupMotorToRunToPosition(DcMotor motor, Integer distance) {
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor.setTargetPosition(distance);
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void setupMotorToRunWithoutEncoder(DcMotor motor) {
@@ -193,7 +195,7 @@ public abstract class CommonOpMode extends LinearOpMode {
     private void slowDown() {
         if (gamepad1.dpad_left) {
             if (!slowDown) {
-                speedAdjust = 4;
+                speedAdjust = 3;
                 slowDown = true;
             }
         } else {
@@ -223,7 +225,7 @@ public abstract class CommonOpMode extends LinearOpMode {
     }
 
     public void incrementDown() {
-        if (gamepad2.left_bumper && !gamepad2.dpad_up) {
+        if (gamepad1.left_bumper && !gamepad2.dpad_up) {
             if (!incrementDown) {
                 increment -= 1;
                 incrementDown = true;
@@ -268,23 +270,56 @@ public abstract class CommonOpMode extends LinearOpMode {
 
     //changed the method to account for two foundation grabbers
     public void foundationGrabberControl() {
-        if (gamepad1.left_trigger == 1 && grabberbuttonpushed == false) {
-            leftFoundationGrabber.setPosition(0);
+        if (gamepad1.x && grabberbuttonpushed == false) {
+            leftFoundationGrabber.setPosition(.5);
             rightFoundationGrabber.setPosition(1);
             grabberbuttonpushed = true;
         } else {
             grabberbuttonpushed = false;
         }
 
-        if (gamepad1.right_trigger == 1 && grabberbuttonnotPushed == false) {
+        if (gamepad1.y  && grabberbuttonnotPushed == false) {
             leftFoundationGrabber.setPosition(1);
-            rightFoundationGrabber.setPosition(0);
+            rightFoundationGrabber.setPosition(.5);
             grabberbuttonnotPushed = true;
         } else {
             grabberbuttonnotPushed = false;
         }
 
 
+    }
+
+    // if gamepad1.y
+    //   if pressed == false
+    //     pressed = true
+    //     if grabber up
+    //      move servos down
+    //      grabber up = false
+    //     else
+    //      move grabber up
+    //   else
+    //     pressed = false
+    //
+
+    public void foundationGrabberOnePress(){
+        if (gamepad1.y) {
+            if (!yPressed) {
+                yPressed = true;
+                if (grabbersUp) {
+                    leftFoundationGrabber.setPosition(0);
+                    rightFoundationGrabber.setPosition(1);
+                    sleep(75);
+                    grabbersUp = false;
+                } else {
+                    leftFoundationGrabber.setPosition(.6);
+                    rightFoundationGrabber.setPosition(.4);
+                    sleep(75);
+                    grabbersUp = true;
+                }
+            }
+        } else {
+            yPressed = false;
+        }
     }
 
     public void lessThanEqualDistance(double target) {
@@ -437,21 +472,21 @@ public abstract class CommonOpMode extends LinearOpMode {
     public void arms() {
 
         int maxBlock = 5;
-        int blockHeight = 520;
-        int fudgeFactor = 60 * (increment - 1);
+        int blockHeight = 560;
+        int fudgeFactor = 60  * (increment - 1);
         currentHeight = (blockHeight * increment) + fudgeFactor;
         int armTopLimit = (blockHeight * (maxBlock + 1)) + (60 * maxBlock);
 
         if (currentHeight >= armTopLimit) {
             telemetry.addData("Danger", "will robinson");
-        } else if (gamepad2.a && !armPress) {
+        } else if (gamepad1.a && !armPress) {
             leftarm.setTargetPosition(currentHeight);
             rightarm.setTargetPosition(currentHeight);
             armsPower(.6);
             armsRunToPosition();
             increment++;
             armPress = true;
-        } else if (gamepad2.b) {
+        } else if (gamepad1.b) {
             leftarm.setTargetPosition(0);
             rightarm.setTargetPosition(0);
             armsPower(-.5);
@@ -462,23 +497,23 @@ public abstract class CommonOpMode extends LinearOpMode {
     }
 
     public void suction() {
-        if (gamepad2.left_trigger == 1) {
+        if (gamepad1.left_trigger == 1) {
             LF.setPower(1);
             LB.setPower(-1);
             RF.setPower(1);
             RB.setPower(-1);
-            LI.setPower(1);
-            RI.setPower(-1);
+            LI.setPower(-1);
+            RI.setPower(1);
             LEFTSUCTIONMOTOR.setPower(-1);
             RIGHTSUCTIONMOTOR.setPower(1);
             //driveAuto(1,0,0,1,30);
-        } else if (gamepad2.right_trigger == 1) {
+        } else if (gamepad1.right_trigger == 1) {
             LF.setPower(-1);
             LB.setPower(1);
             RF.setPower(-1);
             RB.setPower(1);
-            //LI.setPower(-1);
-            //RI.setPower(1);
+            LI.setPower(1);
+            RI.setPower(-1);
             LEFTSUCTIONMOTOR.setPower(1);
             RIGHTSUCTIONMOTOR.setPower(-1);
             //driveAuto(1,0,0,
@@ -511,6 +546,26 @@ public abstract class CommonOpMode extends LinearOpMode {
         sleep(500);
         driveAuto(-1, 0, 0, .3, -15);
         runWithoutEncoders();
+    }
+
+    public void autoPushOut() {
+        LF.setPower(1);
+        LB.setPower(-1);
+        RF.setPower(1);
+        RB.setPower(-1);
+        LI.setPower(0.75);
+        RI.setPower(-0.75);
+        sleep(500);
+    }
+
+    public void autoSuckIn() {
+        LEFTSUCTIONMOTOR.setPower(-1);
+        RIGHTSUCTIONMOTOR.setPower(1);
+        LF.setPower(1);
+        LB.setPower(-1);
+        RF.setPower(1);
+        RB.setPower(-1);
+        sleep(500);
     }
 
     public void blockStrafeLeft() {
@@ -624,6 +679,20 @@ public abstract class CommonOpMode extends LinearOpMode {
         }
     }
 
+    public void autoDriveBackwardsIndefinitely() {
+        blm.setPower(-1);
+        flm.setPower(-1);
+        brm.setPower(-1);
+        frm.setPower(-1);
+    }
+
+    public void autoDriveForwardsIndefinitely() {
+        blm.setPower(1);
+        flm.setPower(1);
+        brm.setPower(1);
+        frm.setPower(1);
+    }
+
     public boolean checkSkystone() {
         //100 is the deciding constant that determines either stone or Skystone
         return abs(leftColorSensor.red() - rightColorSensor.red()) > 100;
@@ -727,7 +796,7 @@ public abstract class CommonOpMode extends LinearOpMode {
 
             do {
                 power = pidRotate.performPID(getAngle()); // power will be - on right turn.
-                rightTurn(power);
+                rightTurn(-power);
             } while (opModeIsActive() && !pidRotate.onTarget());
         } else    // left turn.
             do {
@@ -747,18 +816,27 @@ public abstract class CommonOpMode extends LinearOpMode {
         resetAngle();
     }
 
-    private void rightTurn(double turn) {
-        blm.setPower(-turn);
-        flm.setPower(-turn);
-        brm.setPower(turn);
-        frm.setPower(turn);
+    public void rightTurn(double turn ) {
+        resetDrive();
+        while(abs(flm.getCurrentPosition()) <= abs(1101)) {
+            blm.setPower(-turn);
+            flm.setPower(-turn);
+            brm.setPower(turn);
+            frm.setPower(turn);
+        }
+        stopDriveMotors();
     }
 
-    private void leftTurn(double turn) {
-        blm.setPower(turn);
-        flm.setPower(turn);
-        brm.setPower(-turn);
-        frm.setPower(-turn);
+
+    public void leftTurn(double turn) {
+        resetDrive();
+        while(abs(flm.getCurrentPosition()) <= abs(1101) ) {
+            blm.setPower(turn);
+            flm.setPower(turn);
+            brm.setPower(-turn);
+            frm.setPower(-turn);
+        }
+        stopDriveMotors();
     }
 
     public void driveStraightForward(int distance_cm) {
@@ -801,10 +879,10 @@ public abstract class CommonOpMode extends LinearOpMode {
         while (abs(flm.getCurrentPosition()) <= abs(distance_encoder)) {
             correction = pidDrive.performPID(getAngle());
             telemetryPID();
-            blm.setPower(pidPower - (correction/2));
-            flm.setPower(-pidPower - (correction/2));
-            brm.setPower(-pidPower + (correction/2));
-            frm.setPower(pidPower + (correction/2));
+            blm.setPower(pidPower - (correction / 2));
+            flm.setPower(-pidPower - (correction / 2));
+            brm.setPower(-pidPower + (correction / 2));
+            frm.setPower(pidPower + (correction / 2));
         }
         stopDriveMotors();
     }
@@ -817,10 +895,10 @@ public abstract class CommonOpMode extends LinearOpMode {
         while (abs(flm.getCurrentPosition()) <= abs(distance_encoder)) {
             correction = pidDrive.performPID(getAngle());
             telemetryPID();
-            blm.setPower(-pidPower - (correction/2));
-            flm.setPower(pidPower - (correction/2));
-            brm.setPower(pidPower + (correction/2));
-            frm.setPower(-pidPower + (correction/2));
+            blm.setPower(-pidPower - (correction / 2));
+            flm.setPower(pidPower - (correction / 2));
+            brm.setPower(pidPower + (correction / 2));
+            frm.setPower(-pidPower + (correction / 2));
         }
         stopDriveMotors();
     }
@@ -855,5 +933,71 @@ public abstract class CommonOpMode extends LinearOpMode {
         lessThanEqualDistance(distance_encoder);
         motorSpeedRelay();
         stopDriveMotors();
+    }
+
+    public void actuatorControl() {
+        if (gamepad1.x && actuatorbuttonpushed == false) {
+            leftactuator.setPosition(0.65);
+            rightactuator.setPosition(-0.65);
+            actuatorbuttonpushed = true;
+        } else {
+            actuatorbuttonpushed = false;
+        }
+
+        if (gamepad1.y && actuatorbuttonnotPushed == false) {
+            leftactuator.setPosition(0);
+            rightactuator.setPosition(0);
+            actuatorbuttonnotPushed = true;
+        } else {
+            actuatorbuttonnotPushed = false;
+        }
+
+
+    }
+
+    public void autoScoreSkystone() {
+        if (checkSkystone()) {
+            stopDriveMotors();
+            strafeRight(75);
+            driveBackwardsToFoundation();
+            LB.setPower(-1);
+            RB.setPower(-1);
+            LI.setPower(-1);
+            RI.setPower(1);
+            sleep(3000);
+            /*LEFTSUCTIONMOTOR.setPower(0);
+            RIGHTSUCTIONMOTOR.setPower(0);
+            LF.setPower(0);
+            LB.setPower(-1);
+            RF.setPower(0);
+            RB.setPower(-1);
+            LI.setPower(-1);
+            RI.setPower(1);
+            sleep(2000);
+            strafeRight(75);
+            driveBackwardsToFoundation();
+            autoPushOut();
+            strafeRight(25);
+            driveStraightForward(50);*/
+        }
+    }
+
+    public void driveBackwardsToFoundation() {
+        while (!leftTouchSensor.isPressed() && !rightTouchSensor.isPressed()) {
+            autoDriveBackwardsIndefinitely();
+        }
+    }
+
+    public void autoDriveForwardAndStoneCheck() {
+        while (!checkSkystone()) {
+            autoDriveForwardsIndefinitely();
+            autoSuckIn();
+        }
+    }
+
+    public void  waitForGamePadA() {
+        while(!gamepad1.a) {
+            sleep(20);
+        }
     }
 }
