@@ -10,30 +10,28 @@ public class TeleOpMA extends CommonOpMode {
 
         initHardware();
         armsResetAndRun();
-        initPID();
-
-        telemetry.addData("Mode", "waiting for start");
-        telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
-        telemetry.update();
 
         waitForStart();
 
         while (opModeIsActive()) {
             drive();
             suction();
-            //lift();
             setSpeed();
             arms();
             //capstoneControl();
-            //capstoneGrabber();
-            foundationGrabberControl();
+            capstoneGrabber();
+            foundationGrabberOnePress();
             lineUpBlock();
             incrementDown();
             //incrementUp();
             getGeneralTelemetry();
             //pushOutBackwards();
-            // leftactuator.setPosition(0.65);
-            //rightactuator.setPosition(-0.65);
+            //actuatorControl();
+            leftactuator.setPosition(0.3);
+            rightactuator.setPosition(0.4);
+            //actuators(0.7, -1);
+            //sleep(20);
         }
+
     }
 }

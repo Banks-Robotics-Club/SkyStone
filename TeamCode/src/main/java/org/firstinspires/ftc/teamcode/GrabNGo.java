@@ -24,7 +24,14 @@ public class GrabNGo extends CommonOpMode {
 
         setupPIDParameters();
 
-        strafeRight(100);
+        //rightTurn(.5);
+        //driveStraightBackward(200);
+        //sleep(1000);
+        //driveStraightForward(200);
+        //leftTurn(.5);
+        //leftTurn(90);
+        //rotate(90, 1);
+       /* strafeRight(100);
         sleep(250);
         strafeLeft(100);
         sleep(250);
@@ -32,110 +39,149 @@ public class GrabNGo extends CommonOpMode {
         sleep(250);
         driveStraightForward(100);
         sleep(250);
-        rotate(-90, 0.5);
-        
-            // distance (in cm) to ticks = ((d/31.4)=r*1120)
-           /* if (alliance == BLUE) {
+        rotate(-90, 0.5);*/
+
+
+        // distance (in cm) to ticks = ((d/31.4)=r*1120)
+            if (alliance == BLUE) {
                 if (position == LEFT) {
-                    driveAuto(0, 1, 0, 1, 60);
+                    //driveAuto(0, 1, 0, 1, 60);
+                    //waitForGamePadA();
+                    strafeRight(139);
 
-                    driveAuto(1, 0, 0, 1, 75);
-                    leftFoundationGrabber.setPosition(1);
-                    rightFoundationGrabbet.setPosition(0);
+                    //driveAuto(1, 0, 0, 1, 75);
+                    //waitForGamePadA();
+                    pidPower = .3;
+                    driveStraightBackward(180);
+                    sleep(SERVO_WAIT_TIME);
+                    leftFoundationGrabber.setPosition(0); // puts foundation grabbers down
+                    rightFoundationGrabber.setPosition(1);
                     sleep(SERVO_WAIT_TIME);
 
-                    driveAuto(-1, 0, 0, 1, -80);
-                    leftFoundationGrabber.setPosition(0);
-                    rightFoundationGrabbet.setPosition(1);
+                    //driveAuto(-1, 0, 0, 1, -80);
+                    //waitForGamePadA();
+                    pidPower = .6;
+                    driveStraightForward(160);
+                    sleep(SERVO_WAIT_TIME);
+                    //rightTurn(.3, 2202);
+                    //sleep(SERVO_WAIT_TIME);
+                    //strafeRight(10);
+                    //driveStraightBackward(20);
+                    //sleep(SERVO_WAIT_TIME);
+                    //strafeRight(42);
+                    //sleep(SERVO_WAIT_TIME);
+
+                    //waitForGamePadA();
+                    leftFoundationGrabber.setPosition(.6); // puts foundation grabbers up
+                    rightFoundationGrabber.setPosition(.4);
                     sleep(SERVO_WAIT_TIME);
 
-                    driveAuto(0, -1, 0, 1, -70);
+                    //waitForGamePadA();
+                    strafeLeft(145);
 
-                    driveAuto(1, 0, 0, 1, 45);
+                   // waitForGamePadA();
+                    driveStraightBackward(130);
 
-                    driveAuto(0, 1, 0, 1, 42);
+                    strafeLeft(80);
 
-                    driveAuto(0, -1, 0, 1, -55);
-                    break;
                 }
                 if (position == RIGHT) {
 
-                    driveAuto(0, 1, 0, 1, 60);
+                   // driveAuto(0, 1, 0, 1, 60);
+                    strafeRight(139);
 
-                    driveAuto(1, 0, 0, .25, 75);
-                    leftFoundationGrabber.setPosition(1);
-                    rightFoundationGrabbet.setPosition(0);
+                    //driveAuto(1, 0, 0, .25, 75);
+                    pidPower = .3;
+                    driveStraightBackward(180);
+                    sleep(SERVO_WAIT_TIME);
+                    leftFoundationGrabber.setPosition(0); // puts foundation grabbers down
+                    rightFoundationGrabber.setPosition(1);
                     sleep(SERVO_WAIT_TIME);
 
-                    driveAuto(-1, 0, 0, .25, -80);
-                    leftFoundationGrabber.setPosition(0);
-                    rightFoundationGrabbet.setPosition(1);
+                    //driveAuto(-1, 0, 0, .25, -80);
+                    pidPower = .6;
+                    driveStraightForward(150);
                     sleep(SERVO_WAIT_TIME);
 
-                    driveAuto(0, -1, 0, 1, -70);
+                   // waitForGamePadA();
+                    leftFoundationGrabber.setPosition(.6); // puts foundation grabbers up
+                    rightFoundationGrabber.setPosition(.4);
+                    sleep(SERVO_WAIT_TIME);
 
-                    driveAuto(1, 0, 0, 1, 45);
+                    //waitForGamePadA();
+                    strafeLeft(240);
 
-                    driveAuto(0, 1, 0, 1, 42);
 
-                    driveAuto(-1, 0, 0, 1, -50);
-
-                    driveAuto(0, -1, 0, 1, -55);
-                    break;
                 }
 
             }
             if (alliance == RED) {
                 if (position == RIGHT) {
 
-                    driveAuto(0, 1, 0, .1, -60);
+                    strafeLeft(139);
 
-
-                    driveAuto(1, 0, 0, .1, 80);
-                    leftFoundationGrabber.setPosition(1);
-                    rightFoundationGrabbet.setPosition(0);
+                    //driveAuto(1, 0, 0, 1, 75);
+                    //waitForGamePadA();
+                    pidPower = .3;
+                    driveStraightBackward(180);
+                    sleep(SERVO_WAIT_TIME);
+                    leftFoundationGrabber.setPosition(0); // puts foundation grabbers down
+                    rightFoundationGrabber.setPosition(1);
                     sleep(SERVO_WAIT_TIME);
 
-                    driveAuto(-1, 0, 0, .1, -82);
-                    leftFoundationGrabber.setPosition(0);
-                    rightFoundationGrabbet.setPosition(1);
-                    sleep(CYCLE_MS);
+                    //driveAuto(-1, 0, 0, 1, -80);
+                    //waitForGamePadA();
+                    pidPower = .6;
+                    driveStraightForward(170);
+                    sleep(SERVO_WAIT_TIME);
+                    //rightTurn(.3, 2202);
+                    //sleep(SERVO_WAIT_TIME);
+                    //strafeRight(10);
+                    //driveStraightBackward(20);
+                    //sleep(SERVO_WAIT_TIME);
+                    //strafeRight(42);
+                    //sleep(SERVO_WAIT_TIME);
 
-                    driveAuto(0, -1, 0, .1, 70);
+                    //waitForGamePadA();
+                    leftFoundationGrabber.setPosition(.6); // puts foundation grabbers up
+                    rightFoundationGrabber.setPosition(.4);
+                    sleep(SERVO_WAIT_TIME);
 
-                    driveAuto(-1, 0, 0, .1, 42);
+                    //waitForGamePadA();
+                    strafeRight(145);
 
-                    driveAuto(0, 1, 0, .1, -38);
+                    // waitForGamePadA();
+                    driveStraightBackward(120);
 
-                    driveAuto(0, -1, 0, .1, 58);
-                    break;
+                    strafeRight(100);
                 }
                 if (position == LEFT) {
-                    driveAuto(0, -1, 0, 1, -60);
 
-                    driveAuto(1, 0, 0, 1, 75);
-                    leftFoundationGrabber.setPosition(1);
-                    rightFoundationGrabbet.setPosition(0);
+                    // driveAuto(0, 1, 0, 1, 60);
+                    strafeLeft(139);
+
+                    //driveAuto(1, 0, 0, .25, 75);
+                    pidPower = .3;
+                    driveStraightBackward(180);
+                    sleep(SERVO_WAIT_TIME);
+                    leftFoundationGrabber.setPosition(0); // puts foundation grabbers down
+                    rightFoundationGrabber.setPosition(1);
                     sleep(SERVO_WAIT_TIME);
 
-
-                    driveAuto(-1, 0, 0, 1, -80);
-                    leftFoundationGrabber.setPosition(0);
-                    rightFoundationGrabbet.setPosition(1);
+                    //driveAuto(-1, 0, 0, .25, -80);
+                    pidPower = .6;
+                    driveStraightForward(155);
                     sleep(SERVO_WAIT_TIME);
 
-                    driveAuto(0, 1, 0, 1, 70);
+                    // waitForGamePadA();
+                    leftFoundationGrabber.setPosition(.6); // puts foundation grabbers up
+                    rightFoundationGrabber.setPosition(.4);
+                    sleep(SERVO_WAIT_TIME);
 
-                    driveAuto(1, 0, 0, 1, 45);
-
-                    driveAuto(0, -1, 0, 1, -42);
-
-                    driveAuto(-1, 0, 0, 1, -50);
-
-                    driveAuto(0, 1, 0, 1, 55);
-                    break;
+                    //waitForGamePadA();
+                    strafeRight(260);
                 }
             }
-        }*/
+        }
     }
-}
+
