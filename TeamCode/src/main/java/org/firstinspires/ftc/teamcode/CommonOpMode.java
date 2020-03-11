@@ -228,8 +228,8 @@ public abstract class CommonOpMode extends LinearOpMode {
         telemetry.addData("Arm target position:", "%d", currentHeight);
         //telemetry.addData("Left actuator position:", "%d", leftactuator.getPosition());
         //telemetry.addData("Right actuator position:", "%d", rightactuator.getPosition());
-        telemetry.addData("Skystone", checkSkystone());
-        telemetry.addData("Skystone Diffenence Determinent", leftColorSensor.red() - rightColorSensor.red());
+        //telemetry.addData("Skystone", checkSkystone());
+        //telemetry.addData("Skystone Diffenence Determinent", leftColorSensor.red() - rightColorSensor.red());
         //telemetry.addData("Left red value", leftColorSensor.red());
         //telemetry.addData("Right red value", rightColorSensor.red());
         telemetry.update();
@@ -582,7 +582,8 @@ public abstract class CommonOpMode extends LinearOpMode {
     public void pushOutBackwards() {
         LI.setPower(-0.75);
         RI.setPower(0.75);
-        sleep(500);
+        //sleep(500);
+        sleep(800);
         driveAuto(-1, 0, 0, .3, -15);
         runWithoutEncoders();
     }
@@ -955,14 +956,16 @@ public abstract class CommonOpMode extends LinearOpMode {
     }
 
     public void telemetryPID() {
-        telemetry.addData("Skystone", checkSkystone());
-        telemetry.addData("Skystone Diffenence Determinent", leftColorSensor.red() - rightColorSensor.red());
-        telemetry.addData("1 imu heading", lastAngles.firstAngle);
-        telemetry.addData("2 global heading", globalAngle);
-        telemetry.addData("3 correction", correction);
-        telemetry.addData("4 turn rotation", rotation);
+        //telemetry.addData("1 imu heading", lastAngles.firstAngle);
+        //telemetry.addData("2 global heading", globalAngle);
+        //telemetry.addData("3 correction", correction);
+        //telemetry.addData("4 turn rotation", rotation);
         telemetry.addData("5 PID power", pidPower);
-        telemetry.addData("6 motor encoder", abs(flm.getCurrentPosition()));
+        telemetry.addData("fl motor encoder", abs(flm.getCurrentPosition()));
+        telemetry.addData("bl motor encoder", abs(blm.getCurrentPosition()));
+        telemetry.addData("fr motor encoder", abs(frm.getCurrentPosition()));
+        telemetry.addData("br motor encoder", abs(brm.getCurrentPosition()));
+        telemetry.addData("frp", frm.getPower());
         telemetry.update();
     }
 
@@ -1035,14 +1038,34 @@ public abstract class CommonOpMode extends LinearOpMode {
         }
     }
 
-    public void autoDriveForwardAndStoneCheck() {
+    public void blueAutoDriveForwardAndStoneCheck() {
         autoSuckIn();
         pidPower = .2;
-        driveForwardIndefinitlyWithPID();
+        //driveForwardForSkystoneCollection(10);
+        //driveForwardIndefinitlyWithPID();
         //autoDriveForwardsIndefinitelySlowly();
 
         while (!checkSkystone()) {
-            sleep(20);
+            //driveStraightForward(30);
+            setDrivePower(.2);
+            sleep(400);
+            stopDriveMotors();
+            sleep(650);
+        }
+    }
+
+    public void redAutoDriveForwardAndStoneCheck() {
+        autoSuckIn();
+        //driveForwardForSkystoneCollection(10);
+        //driveForwardIndefinitlyWithPID();
+        //autoDriveForwardsIndefinitelySlowly();
+
+        while (!checkSkystone()) {
+            //driveStraightForward(30);
+            setDrivePower(.2);
+            sleep(400);
+            stopDriveMotors();
+            sleep(650);
         }
     }
 
